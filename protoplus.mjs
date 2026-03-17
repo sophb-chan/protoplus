@@ -146,11 +146,6 @@ const protoplus = {
     },
 
     proto: {
-        Object: {
-            forEach: function() {
-                if (JSON.isJSON)
-            }
-        },
         Audio: {
             resume: function () {
                 if (this.paused) {
