@@ -1,33 +1,31 @@
 const now =
   typeof globalThis.performance?.now === "function"
-    ? ()=>Math.trunc(performance.now())
-    : Date.now
-const ___nativeSort = Array.prototype.sort
+    ? ()=>Math.trunc(performance.now()) // use performance.now when available
+    : Date.now;
+
 const protoplus = {
     snapshots: {},
     global: {
         JSON: {
             isJSON: function (obj) {
-                return obj !== null && typeof obj === 'object' && !Array.isArray(obj)
+                return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
             },
             iterate: function (obj, callback) {
-                if (!JSON.isJSON(obj)) throw new TypeError('Argument "obj" has to be of type "JSON" ("object").')
-                if (typeof callback !== 'function') throw new TypeError('Argument "callback" has to be of type "function".')
+                if (!JSON.isJSON(obj)) throw new TypeError('Argument "obj" has to be of type "JSON" ("object").');
+                if (typeof callback !== 'function') throw new TypeError('Argument "callback" has to be of type "function".');
                 for (let i = 0; i < Object.keys(obj).length; i++) {
-                    callback(Object.keys(obj)[i], Object.values(obj)[i], i)
+                    callback(Object.keys(obj)[i], Object.values(obj)[i], i);
                 }
             }
         },
 
         RegExp: {
-            escape: (str)=>{
-                return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            }
+            escape: (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         },
 
         Array: {
             shuffle: (arr) => {
-                if (!Array.isArray(arr)) return
+                if (!Array.isArray(arr)) return;
                 // Durstenfield shuffle script not made by me
                 // Code from https://stackoverflow.com/a/12646864
                 // Credit where it's due!
@@ -42,20 +40,18 @@ const protoplus = {
             genericType: (array) => {
                 if (array.length === 0) return undefined;
 
-                let baseType = Object.typeOf(array[0]);
+                const baseType = Object.typeOf(array[0]);
                 for (let i = 1; i < array.length; i++) {
                     if (Object.typeOf(array[i]) !== baseType)
                         return undefined;
                 }
 
-                return baseType
+                return baseType;
             }
         },
 
         Math: {
-            clamp: (num, min, max) => {
-                return Math.max(min, Math.min(max, num))
-            },
+            clamp: (num, min, max) => Math.max(min, Math.min(max, num)),
             TAU: 2 * Math.PI,
             angle: {
                 clampDeg: (deg) => deg % 360,
@@ -68,11 +64,11 @@ const protoplus = {
         Number: {
             testFloatPrecision: () => {
                 for (let i = 0; i < 5e2; i++) {
-                    let baseNumber = 1
-                    let testNumber = parseFloat(`0.${'9'.repeat(i)}`)
+                    const baseNumber = 1;
+                    const testNumber = parseFloat(`0.${'9'.repeat(i)}`);
                     if (testNumber === baseNumber) {
-                        Number.floatPrecision = i
-                        return i
+                        Number.floatPrecision = i;
+                        return i;
                     }
                 }
             },
@@ -84,31 +80,32 @@ const protoplus = {
                 if (typeof thing === 'object')
 
                     if (thing === null)
-                        return 'null'
+                        return 'null';
 
                     else if (Array.isArray(thing))
-                        return 'array'
+                        return 'array';
 
                     else
-                        return 'object'
+                        return 'object';
 
                 else if (typeof thing === 'number') {
 
                     if (Number.isNaN(thing))
-                        return 'nan'
+                        return 'nan';
                     else if (!Number.isFinite(thing))
-                        return 'infinity'
+                        return 'infinity';
 
                 } else if (typeof thing === 'function') {
 
                     function isClass(value) {
-                        if (typeof value !== 'function') return 
+                        if (typeof value !== 'function') return;
+ 
                         // do many tests to prove class status
                         const tests = [
                             Function.prototype.toString.call(value).startsWith("class "),
                             (()=>{
                                 try {
-                                    Reflect.construct(String, [], value)
+                                    Reflect.construct(String, [], value);
                                     return false;
                                 } catch (err) {
                                     return /class constructor/i.test(err?.message ?? err);
@@ -127,15 +124,15 @@ const protoplus = {
                             })()
                         ]
 
-                        return tests.some(Boolean)
+                        return tests.some(Boolean);
                     }
                     if (isClass(thing))
-                        return 'class'
+                        return 'class';
                     else
-                        return 'function'
+                        return 'function';
 
                 } else
-                    return typeof thing
+                    return typeof thing;
             },
             types: Object.freeze( // made it a string so it's easier to add more
                 'number,string,boolean,function,class,symbol,bigint,undefined,null,array,object,nan,infinity'
@@ -148,53 +145,53 @@ const protoplus = {
         Audio: {
             resume: function () {
                 if (this.paused) {
-                    this.play()
-                    return true
+                    this.play();
+                    return true;
                 } else {
-                    return false
+                    return false;
                 }
             }
         },
 
         Array: {
             last: function () {
-                return this[this.length - 1]
+                return this[this.length - 1];
             },
             shuffle: function () {
-                let shuffled = Array.shuffle(this)
+                const shuffled = Array.shuffle(this);
                 shuffled.forEach((item, i) => {
-                    this[i] = item
+                    this[i] = item;
                 })
-                return shuffled
+                return shuffled;
             },
             toShuffled: function () {
-                return Array.shuffle([...this])
+                return Array.shuffle([...this]);
             },
             genericType: function () {
-                return Array.genericType(this)
+                return Array.genericType(this);
             },
             advSort: function (compareFn) {
-                let arrType = this.genericType()
+                const arrType = this.genericType();
 
                 if (compareFn !== undefined) {
                     if (typeof compareFn === 'function') {
-                        ___nativeSort.call(this, compareFn)
+                        this.sort(compareFn);
                     } else {
-                        throw new TypeError(`The comparison function should not be of type '${typeof compareFn}', only 'function' or 'undefined'`)
+                        throw new TypeError(`The comparison function should not be of type '${typeof compareFn}', only 'function' or 'undefined'`);
                     }
                 } else {
                     if (arrType === 'number')
-                        ___nativeSort.call(this, (a, b) => a - b)
+                        this.sort((a, b) => a - b);
                     else
-                        ___nativeSort.call(this)
+                        this.sort();
                 }
-                return this
+                return this;
             }
         },
 
         HTMLCollection: {
             last: function () {
-                return this[this.length - 1]
+                return this[this.length - 1];
             }
         },
 
@@ -207,27 +204,27 @@ const protoplus = {
                 literal: ['false', 'true']
             },
             format: function ({ type = 'literal' }) {
-                const bool = this.valueOf()
-                const types = Boolean.formatTypes
+                const bool = this.valueOf();
+                const types = Boolean.formatTypes;
 
-                const pair = types[type] ?? ['false', 'true']
-                return pair[+bool]
+                const pair = types[type] ?? ['false', 'true'];
+                return pair[+bool]; // transform bool to num by adding with 0
             }
         },
         String: {
             last: function () {
-                return this[this.length - 1]
+                return this[this.length - 1];
             },
             escapeRegex: function () {
-                return RegExp.escape(String(this))
+                return RegExp.escape(String(this));
             },
-            trimStart: function (...strings) {
+            trimLeft: function (...strings) {
                 if (strings.length < 1) {
                     strings = [' ', '\t', '\n', '\r'];
                 }
-                let finalStr = String(this)
+                let finalStr = this.valueOf();
                 strings.forEach(string => {
-                    if (typeof string !== 'string') return
+                    if (typeof string !== 'string') return;
                     finalStr = finalStr.replace(new RegExp(`^${string.escapeRegex()}+`), "");
                 })
                 return strings;
@@ -237,10 +234,10 @@ const protoplus = {
                 if (strings.length < 1) {
                     strings = [' ', '\t', '\n', '\r'];
                 }
-                let finalStr = String(this)
+                let finalStr = this.valueOf();
                 strings.forEach(string => {
-                    if (typeof string !== 'string') return
-                    finalStr = finalStr.replace(new RegExp(`${string.escapeRegex()}+$`), "")
+                    if (typeof string !== 'string') return;
+                    finalStr = finalStr.replace(new RegExp(`${string.escapeRegex()}+$`), "");
                 })
                 return finalStr;
             },
@@ -249,27 +246,30 @@ const protoplus = {
                 return this.trimStart(...strings).trimEnd(...strings);
             },
             reverse: function () {
-                return this.split('').reverse().join('')
+                return this.
+                    split('')
+                    .reverse()
+                    .join('');
             },
             erase: function(...strings) {
-                let finalStr = String(this)
+                let finalStr = this.valueOf();
                 strings.some(str => {
-                    finalStr = finalStr.replace(str, '')
+                    finalStr = finalStr.replace(str, '');
                 })
-                return finalStr
+                return finalStr;
             },
             eraseAll: function(...strings) {
-                let finalStr = String(this)
+                let finalStr = this.valueOf();
                 strings.some(str => {
-                    finalStr = finalStr.replaceAll(str, '')
+                    finalStr = finalStr.replaceAll(str, '');
                 })
-                return finalStr
+                return finalStr;
             },
-            chars: function() { return this.split('') },
-            words: function() { return this.split(' ') },
-            lines: function() { return this.split('\n') },
+            chars: function() { return this.split(''); },
+            words: function() { return this.split(' '); },
+            lines: function() { return this.split('\n'); },
             compactPunct: function() {
-                let puncts = {
+                const puncts = {
                     '...': '…',
                     '---': '—',
                     '--': '–',
@@ -281,53 +281,61 @@ const protoplus = {
                     '!?': '⁉',
                     '?!': '⁉'
                 }
+                let finalStr = this.valueOf();
+                finalStr = finalStr.replace(
+                    new RegExp(`(${
+                        Object.keys(puncts).map(RegExp.escape).join('|')
+                    })`, 'g'),
+                    punct => puncts[punct]
+                );
+                return finalStr;
             },
             forEach: function (callback, separator = '') {
                 const separated = this.split(separator)
                 for (let i = 0; i < separated.length; i++) {
-                    callback(separated[i], i, this)
+                    callback(separated[i], i, this);
                 }
                 return;
             },
             toTitleCase: function (separator = ' ') {
-                let str = String(this),
+                const str = String(this),
                     finalStr = [];
 
                 str.split(separator).forEach((arg) => {
-                    finalStr.push(arg[0].toUpperCase() + arg.substring(1))
+                    finalStr.push(arg[0].toUpperCase() + arg.substring(1));
                 })
 
-                return finalStr.join(separator)
+                return finalStr.join(separator);
             },
             startsWithAmount: function (char) {
                 for (let i = 0; i < this.length; i++) {
                     if (this[i] !== char)
-                        return i
+                        return i;
                 }
-                return this.length
+                return this.length;
             },
             endsWithAmount: function (char) {
-                let iterations = 0
+                let iterations = 0;
                 for (let i = this.length - 1; i >= 0; i--) {
                     if (this[i] !== char)
-                        return iterations
+                        return iterations;
 
                     iterations++
                 }
-                return this.length
+                return this.length;
             },
             amountOf: function (substring) {
                 let matches = 0;
                 for (let i = 0; i < this.length; i++) {
-                    let searchStr = this.substring(i, i + substring.length)
+                    const searchStr = this.substring(i, i + substring.length);
                     if (searchStr === substring) matches++
                 }
-                return matches
+                return matches;
             },
             cleanup: function() {
                 return this.valueOf()
                     .normalize("NFKD")
-                    .replace(/\p{M}/gu, "")
+                    .replace(/\p{M}/gu, "");
             }
         },
 
@@ -341,19 +349,19 @@ const protoplus = {
                 return Math.round((this - 1) / 2) * 2 + 1;
             },
             fix: function (digits) {
-                return parseFloat(this.toFixed(digits))
+                return parseFloat(this.toFixed(digits));
             },
             floor: function () {
-                return Math.floor(this)
+                return Math.floor(this);
             },
             ceil: function () {
-                return Math.ceil(this)
+                return Math.ceil(this);
             },
             round: function () {
-                return Math.round(this)
+                return Math.round(this);
             },
             clamp: function (min, max) {
-                return Math.max(min, Math.min(max, this))
+                return Math.max(min, Math.min(max, this));
             }
         }
     },
