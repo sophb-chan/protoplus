@@ -76,6 +76,10 @@ const protoplus = {
         },
 
         Object: {
+            isPlain: function() {
+                return this !== null && typeof this === 'object' && !Array.isArray(this);
+            },
+
             typeOf: (thing) => {
                 if (typeof thing === 'object')
 
@@ -142,6 +146,11 @@ const protoplus = {
     },
 
     proto: {
+        Object: {
+            forEach: function() {
+                if (JSON.isJSON)
+            }
+        },
         Audio: {
             resume: function () {
                 if (this.paused) {
