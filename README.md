@@ -9,7 +9,7 @@ Proto+ (aka protoplus) is a multi-enviroment ESM module that expands JavaScript'
 ### Via HTML
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/ccjit/protoplus@main/protoplus.mjs"
+  src="https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs"
   type="module"
 ></script>
 ```
@@ -20,7 +20,7 @@ Proto+ (aka protoplus) is a multi-enviroment ESM module that expands JavaScript'
   // import proto+
 
   const script = document.createElement('script');
-  script.src = "https://cdn.jsdelivr.net/gh/sophb-ccjt/protoplus@main/protoplus.mjs";
+  script.src = "https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs";
   script.type = "module";
   document.head.appendChild(script);
 })();
@@ -35,7 +35,7 @@ npm install git+https://github.com/sophb-ccjt/protoplus.git
 
 or alternatively, use `yarn`:
 ```shell
-yarn add ccjit/protoplus
+yarn add sophb-ccjt/protoplus
 ```
 
 then add this code to the top of your script file:
@@ -46,7 +46,7 @@ import { protoplus } from 'protoplus';
 ## In Deno
 Add this code to the top of your script file:
 ```js
-import { protoplus } from 'https://cdn.jsdelivr.net/gh/sophb-ccjt/protoplus@main/protoplus.mjs';
+import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs';
 ```
 
 

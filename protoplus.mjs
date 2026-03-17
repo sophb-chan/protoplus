@@ -564,6 +564,6 @@ const protoplus = {
     version: '1.0.0'
 }
 
-console.log(`proto+ v${protoplus.version} loaded!`)
+console.log(`proto+ v${protoplus.version} loaded!`);
 
-export { protoplus }
+export { protoplus };
