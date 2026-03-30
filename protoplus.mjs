@@ -565,9 +565,9 @@ const protoplus = {
         const endTime = now()
         console.log(`contracted methods in ${endTime - startTime}ms`)
     },
-    version: '1.1.0'
+    version: '1.1.1'
 }
 
-console.log(`proto+ v${protoplus.version} loaded!`);
+globalThis.protoplus = protoplus;
 
-export { protoplus };
+console.log(`proto+ v${protoplus.version} loaded!`);
