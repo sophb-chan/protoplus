@@ -366,59 +366,131 @@ const protoplus = {
             },
             clamp: function (min, max) {
                 return Math.max(min, Math.min(max, this));
-            }
+            },
+            inRange: function (min, max = min, minInclusive = true, maxInclusive = true) {
+                const num = this.valueOf();
+                const insideMin = minInclusive ? num >= min : num > min;
+                const insideMax = maxInclusive ? num <= max : num < max;
+                return insideMin && insideMax;
+            },
         }
     },
     classes: {
         AdvDate: class {
-            // a more human friendly date API (made by ccjt)
-
-            #timestamp; // define timestamp
-            constructor(timestamp) {
-                this.#timestamp = ()=>timestamp || Date.now() // init timestamp
-                this.weekNames = [
-                    "Sunday",
-                    "Monday",
-                    "Tuesday", 
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday"
-                ];
-                this.times = {
-                    timestamp: ()=>this.#timestamp(),
-                    weekDay: ()=>new Date(this.#timestamp()).getDay() + 1,
-                    day: ()=>new Date(this.#timestamp()).getDate(),
-                    week: ()=>(new Date(new Date(this.#timestamp()).getFullYear(this.#timestamp()), new Date(this.#timestamp()).getMonth() + 1, 0).getDate()),
-                    weekName: ()=>(this.weekNames[new Date(this.#timestamp()).getDay()]),
-                    month: ()=>new Date(this.#timestamp()).getMonth() + 1,
-                    year: ()=>new Date(this.#timestamp()).getFullYear(),
-                    hours: ()=>new Date(this.#timestamp()).getHours() + 1,
-                    minutes: ()=>new Date(this.#timestamp()).getMinutes(),
-                    seconds: ()=>new Date(this.#timestamp()).getSeconds(),
-                    milliseconds: ()=>new Date(this.#timestamp()).getMilliseconds()
-                }
-                for (let i = 0; i < Object.keys(this.times).length; i++) {
-                    const key = Object.keys(this.times)[i]
-                    const value = Object.values(this.times)[i]
-                    this[key] = value
-                }
-            }
-
-            getDateString(trimWeek = false, showWeek = true, monthFirst = true, timeFirst = false, showMs = false, dateSeparator = '/', timeSeparator = ':', msSeparator = '.') {
-                // this code could most likely be compressed into 1 or 2 strings. please do once you figure out how, i beg of you
-
-                if (monthFirst)
-                    if (timeFirst)
-                        return `${showWeek ? (`${trimWeek ? this.times.weekName().substring(0, 3) : this.times.weekName()} `) : ''}${[this.times.hours().toString().padStart(2, '0'), this.times.minutes().toString().padStart(2, '0'), this.times.seconds().toString().padStart(2, '0')].join(timeSeparator)}${showMs ? `${msSeparator}${this.times.milliseconds().toString().padStart(3, '0')}` : ''} ${[this.times.month().toString().padStart(2, '0'), this.times.day().toString().padStart(2, '0'), this.times.year().toString().padStart(4, '0')].join(dateSeparator)}`
-                    else
-                        return `${showWeek ? (`${trimWeek ? this.times.weekName().substring(0, 3) : this.times.weekName()} `) : ''}${[this.times.month().toString().padStart(2, '0'), this.times.day().toString().padStart(2, '0'), this.times.year().toString().padStart(4, '0')].join(dateSeparator)} ${[this.times.hours().toString().padStart(2, '0'), this.times.minutes().toString().padStart(2, '0'), this.times.seconds().toString().padStart(2, '0')].join(timeSeparator)}${showMs ? `${msSeparator}${this.times.milliseconds().toString().padStart(3, '0')}` : ''}`
-                else
-                    if (timeFirst)
-                        return `${showWeek ? (`${trimWeek ? this.times.weekName().substring(0, 3) : this.times.weekName()} `) : ''}${[this.times.hours().toString().padStart(2, '0'), this.times.minutes().toString().padStart(2, '0'), this.times.seconds().toString().padStart(2, '0')].join(timeSeparator)}${showMs ? `${msSeparator}${this.times.milliseconds().toString().padStart(3, '0')}` : ''} ${[this.times.day().toString().padStart(2, '0'), this.times.month().toString().padStart(2, '0'), this.times.year().toString().padStart(4, '0')].join(dateSeparator)}`
-                    else
-                        return `${showWeek ? (`${trimWeek ? this.times.weekName().substring(0, 3) : this.times.weekName()} `) : ''}${[this.times.day().toString().padStart(2, '0'), this.times.month().toString().padStart(2, '0'), this.times.year().toString().padStart(4, '0')].join(dateSeparator)} ${[this.times.hours().toString().padStart(2, '0'), this.times.minutes().toString().padStart(2, '0'), this.times.seconds().toString().padStart(2, '0')].join(timeSeparator)}${showMs ? `${msSeparator}${this.times.milliseconds().toString().padStart(3, '0')}` : ''}`
-            }
+        	constructor({
+        		timestampFn = Date.now,
+        		is24hour = null,
+        		am = 'AM',
+        		pm = 'PM'
+        	} = {}) {
+        		this.weekNames = [
+        			"Sunday",
+        			"Monday",
+        			"Tuesday",
+        			"Wednesday",
+        			"Thursday",
+        			"Friday",
+        			"Saturday"
+        		];
+        
+        		const getTimestamp = timestampFn ? timestampFn : Date.now
+        		const getHour = ()=>{
+        			switch (is24hour) {
+        				case true:
+        					return parseInt(
+        						new Date(getTimestamp()).toLocaleTimeString('en-US', {
+        							hour12: false,
+        							hour: '2-digit'
+        						})
+        					);
+        				
+        				case false:
+        					return parseInt(
+        						new Date(getTimestamp()).toLocaleTimeString('en-US', {
+        							hour12: true,
+        							hour: '2-digit'
+        						})
+        					);
+        				
+        				default:
+        					return parseInt(
+        						new Date(getTimestamp()).toLocaleTimeString(undefined, {
+        							hour: '2-digit'
+        						})
+        					);
+        			}
+        		};
+        		this.times = {
+        			timestamp: getTimestamp,
+        			weekDay: ()=>new Date(getTimestamp()).getDay() + 1,
+        			day: ()=>new Date(getTimestamp()).getDate(),
+        			dayOfWeek: ()=>new Date(getTimestamp()).getDay(),
+        			daysInMonth: ()=>(new Date(new Date(getTimestamp()).getFullYear(), new Date(getTimestamp()).getMonth() + 1, 0).getDate()),
+        			weekName: ()=>(this.weekNames[new Date(getTimestamp()).getDay()]),
+        			month: ()=>new Date(getTimestamp()).getMonth() + 1,
+        			year: ()=>new Date(getTimestamp()).getFullYear(),
+        			hours: getHour,
+        			minutes: ()=>new Date(getTimestamp()).getMinutes(),
+        			seconds: ()=>new Date(getTimestamp()).getSeconds(),
+        			milliseconds: ()=>new Date(getTimestamp()).getMilliseconds(),
+        			meridiem: ()=>{
+        				if (isDefined(is24hour) && !is24hour) {
+        					return new Date().toLocaleTimeString('en-US', {
+        						hour: 'numeric',
+        						minute: 'numeric',
+        						hour12: true
+        					}).split(' ')[1] === 'AM' ? am:pm;
+        				} else return '';
+        			}
+        		};
+        
+        		Object.keys(this.times).forEach(k => this[k] = this.times[k]);
+        	}
+        
+        	getDateString({
+        		trimWeek = false,
+        		showWeek = true,
+        		monthFirst = true,
+        		timeFirst = false,
+        		showMs = false,
+        		dateSeparator = '/',
+        		timeSeparator = ':',
+        		msSeparator = '.',
+        		dateOnly = false,
+        		timeOnly = false
+        	} = {}) {
+        		const week =
+        		showWeek ?
+        			(`${
+        				trimWeek ?
+        					this.times.weekName().substring(0, 3)
+        				:
+        					this.times.weekName()
+        			} `)
+        		: '';
+        		const time = [
+        			this.times.hours().toString().padStart(2, '0'),
+        			this.times.minutes().toString().padStart(2, '0'),
+        			this.times.seconds().toString().padStart(2, '0')
+        		].join(timeSeparator)
+        			+ (showMs ? `${msSeparator}${this.times.milliseconds().toString().padStart(3, '0')}` : '');
+        
+        		const date = [
+        			(monthFirst ? this.times.month() : this.times.day()).toString().padStart(2, '0'),
+        			(monthFirst ? this.times.day() : this.times.month()).toString().padStart(2, '0'),
+        			this.times.year().toString().padStart(4, '0')
+        		].join(dateSeparator);
+        
+        		if (timeOnly && dateOnly) throw new Error('You cannot only get the time while also only getting the date.');
+        
+        		if (timeOnly) return time;
+        		if (dateOnly) return date;
+        
+        		if (timeFirst)
+        			return week + time + ' ' + date;
+        		else
+        			return week + date + ' ' + time;
+        	}
         }
     },
     expand: ({override = true, skipProtos = false, skipGlobals = false, skipClasses = false} = {}) => {
@@ -565,7 +637,7 @@ const protoplus = {
         const endTime = now()
         console.log(`contracted methods in ${endTime - startTime}ms`)
     },
-    version: '1.1.1'
+    version: '1.2.0'
 }
 
 globalThis.protoplus = protoplus;
