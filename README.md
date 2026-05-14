@@ -1,9 +1,7 @@
 # proto+
-Proto+ (aka protoplus) is a multi-enviroment ESM module that expands JavaScript's prototype definitions, global helper functions and others.
+Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
 
-**Note: This module is currently ESM-only. Using `require` or similar won't work. CommonJS and WebJS versions are coming soon.**
-
-# How to use
+# How to use (ES6 Module)
 ## In browsers via HTML or JS:
 
 ### Via HTML
@@ -47,6 +45,51 @@ import { protoplus } from 'protoplus';
 Add this code to the top of your script file:
 ```js
 import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs';
+```
+
+
+# How to use (CommonJS/WebJS module)
+## In browsers via HTML or JS:
+
+### Via HTML
+```html
+<script
+  src="https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js"
+></script>
+```
+
+### Via JS
+```js
+(()=>{
+  // import proto+
+
+  const script = document.createElement('script');
+  script.src = "https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js";
+  document.head.appendChild(script);
+})();
+```
+
+## In Node.js, Bun, or front-end frameworks like React/Next.js:
+Install proto+ (if you haven't already):
+
+```shell
+npm install git+https://github.com/sophb-ccjt/protoplus.git
+```
+
+or alternatively, use `yarn`:
+```shell
+yarn add sophb-ccjt/protoplus
+```
+
+then add this code to the top of your script file:
+```js
+import { protoplus } from 'protoplus';
+```
+
+## In Deno
+Add this code to the top of your script file:
+```js
+import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js';
 ```
 
 
