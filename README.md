@@ -1,7 +1,12 @@
 # proto+
 Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
 
-# How to use (ES6 Module)
+# Table of Contents
+- [How to Import (ES6 module)](https://github.com/sophb-ccjt/protoplus/blob/main/README.md#how-to-import-es6-module)
+- [How to Import (CommonJS/WebJS module)](https://github.com/sophb-ccjt/protoplus/blob/main/README.md#how-to-import-commonjswebjs-module)
+- [Quick Start](https://github.com/sophb-ccjt/protoplus/blob/main/README.md#quick-start)
+
+# How to Import (ES6 module)
 ## In browsers via HTML or JS:
 
 ### Via HTML
@@ -48,7 +53,7 @@ import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/
 ```
 
 
-# How to use (CommonJS/WebJS module)
+# How to Import (CommonJS/WebJS module)
 ## In browsers via HTML or JS:
 
 ### Via HTML
@@ -93,7 +98,7 @@ import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/
 ```
 
 
-# How to use proto+
+# Quick Start
 After importing the script to your project, you can use `protoplus.expand()` to expand prototypes and others, and `protoplus.contract()` to restore them to their default/previous value.
 It's recommended to run `protoplus.expand()` after the import statement (if you're using proto+ in a browser and imported it via HTML, run `protoplus.expand()` at the top of your script file).
 
