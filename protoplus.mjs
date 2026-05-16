@@ -171,6 +171,9 @@ const protoplus = {
             toShuffled: function () {
                 return Array.shuffle([...this]);
             },
+            random: function () {
+                return this[Math.floor(Math.random()*this.valueOf().length)]
+            },
             genericType: function () {
                 return Array.genericType(this);
             },
@@ -637,7 +640,7 @@ const protoplus = {
         const endTime = now()
         console.log(`contracted methods in ${endTime - startTime}ms`)
     },
-    version: '1.2.0'
+    version: '1.3.0'
 }
 
 globalThis.protoplus = protoplus;
