@@ -4,7 +4,7 @@
             ? ()=>Math.trunc(performance.now()) // use performance.now when available
             : Date.now,
         snapshots: {},
-        version: '1.2.0'
+        version: '1.3.0'
     }
     const protoplus = {
         global: {
