@@ -173,6 +173,9 @@
                 toShuffled: function () {
                     return Array.shuffle([...this]);
                 },
+                random: function () {
+                    return this[Math.floor(Math.random()*this.valueOf().length)]
+                },
                 genericType: function () {
                     return Array.genericType(this);
                 },
