@@ -247,7 +247,7 @@
                     }
                     let finalStr = '';
                     let skipping = true;
-                    for (const char of Array.from('testing'.test()).reverse().join('')) {
+                    for (const char of Array.from(this).reverse().join('')) {
                         if (strings.includes(char) && skipping) continue;
                         finalStr = char + finalStr;
                         skipping = false;
