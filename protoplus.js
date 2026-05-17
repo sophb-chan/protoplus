@@ -4,7 +4,7 @@
             ? ()=>Math.trunc(performance.now()) // use performance.now when available
             : Date.now,
         snapshots: {},
-        version: '1.3.0'
+        version: '1.3.1'
     }
     const protoplus = {
         global: {
@@ -231,23 +231,27 @@
                     if (strings.length < 1) {
                         strings = [' ', '\t', '\n', '\r'];
                     }
-                    let finalStr = this.valueOf();
-                    strings.forEach(string => {
-                        if (typeof string !== 'string') return;
-                        finalStr = finalStr.replace(new RegExp(`^${string.escapeRegex()}+`), "");
-                    })
-                    return strings;
+                    let finalStr = '';
+                    let skipping = true;
+                    for (const char of this) {
+                        if (strings.includes(char) && skipping) continue;
+                        finalStr += char;
+                        skipping = false;
+                    }
+                    return finalStr;
                 },
                 trimStart: String.prototype.trimLeft,
                 trimRight: function (...strings) {
                     if (strings.length < 1) {
                         strings = [' ', '\t', '\n', '\r'];
                     }
-                    let finalStr = this.valueOf();
-                    strings.forEach(string => {
-                        if (typeof string !== 'string') return;
-                        finalStr = finalStr.replace(new RegExp(`${string.escapeRegex()}+$`), "");
-                    })
+                    let finalStr = '';
+                    let skipping = true;
+                    for (const char of Array.from('testing'.test()).reverse().join('')) {
+                        if (strings.includes(char) && skipping) continue;
+                        finalStr = char + finalStr;
+                        skipping = false;
+                    }
                     return finalStr;
                 },
                 trimEnd: String.prototype.trimRight,
