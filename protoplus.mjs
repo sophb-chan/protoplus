@@ -238,7 +238,19 @@ const protoplus = {
                 }
                 return finalStr;
             },
-            trimStart: String.prototype.trimLeft,
+            trimStart: function (...strings) {
+                if (strings.length < 1) {
+                    strings = [' ', '\t', '\n', '\r'];
+                }
+                let finalStr = '';
+                let skipping = true;
+                for (const char of this) {
+                    if (strings.includes(char) && skipping) continue;
+                    finalStr += char;
+                    skipping = false;
+                }
+                return finalStr;
+            },
             trimRight: function (...strings) {
                 if (strings.length < 1) {
                     strings = [' ', '\t', '\n', '\r'];
@@ -252,7 +264,19 @@ const protoplus = {
                 }
                 return finalStr;
             },
-            trimEnd: String.prototype.trimRight,
+            trimEnd: function (...strings) {
+                if (strings.length < 1) {
+                    strings = [' ', '\t', '\n', '\r'];
+                }
+                let finalStr = '';
+                let skipping = true;
+                for (const char of Array.from(this).reverse().join('')) {
+                    if (strings.includes(char) && skipping) continue;
+                    finalStr = char + finalStr;
+                    skipping = false;
+                }
+                return finalStr;
+            },
             trim: function (...strings) {
                 return this.trimStart(...strings).trimEnd(...strings);
             },

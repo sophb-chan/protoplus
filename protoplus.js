@@ -1,4 +1,11 @@
-(async ()=>{
+(async ({
+    preexpand = false,
+    silent = false,
+    override = true,
+    skipProtos = false,
+    skipGlobals = false,
+    skipClasses = false
+} = {}) => {
     const innards = {
         now: typeof globalThis.performance?.now === "function"
             ? ()=>Math.trunc(performance.now()) // use performance.now when available
@@ -240,7 +247,19 @@
                     }
                     return finalStr;
                 },
-                trimStart: String.prototype.trimLeft,
+                trimStart: function (...strings) {
+                    if (strings.length < 1) {
+                        strings = [' ', '\t', '\n', '\r'];
+                    }
+                    let finalStr = '';
+                    let skipping = true;
+                    for (const char of this) {
+                        if (strings.includes(char) && skipping) continue;
+                        finalStr += char;
+                        skipping = false;
+                    }
+                    return finalStr;
+                },
                 trimRight: function (...strings) {
                     if (strings.length < 1) {
                         strings = [' ', '\t', '\n', '\r'];
@@ -254,7 +273,19 @@
                     }
                     return finalStr;
                 },
-                trimEnd: String.prototype.trimRight,
+                trimEnd: function (...strings) {
+                    if (strings.length < 1) {
+                        strings = [' ', '\t', '\n', '\r'];
+                    }
+                    let finalStr = '';
+                    let skipping = true;
+                    for (const char of Array.from(this).reverse().join('')) {
+                        if (strings.includes(char) && skipping) continue;
+                        finalStr = char + finalStr;
+                        skipping = false;
+                    }
+                    return finalStr;
+                },
                 trim: function (...strings) {
                     return this.trimStart(...strings).trimEnd(...strings);
                 },
@@ -576,10 +607,10 @@
                     continue;
                 }
 
-                globalThis[className] = classDef
+                globalThis[className] = classDef;
             }
             const endTime = innards.now()
-            console.log(`expanded methods in ${endTime - startTime}ms`)
+            if (!silent) console.log(`expanded methods in ${endTime - startTime}ms`)
         },
         contract: ({forceErase = false, skipProtos = false, skipGlobals = false, skipClasses = false} = {}) => {
             const globals = protoplus.global
@@ -625,9 +656,9 @@
 
                     // delete definition if erasing is forced or there is no snapshot
                     if (forceErase || !innards.snapshots[`prototype.${key}.${name}`])
-                        delete globalThis[key].prototype[name]
+                        delete globalThis[key].prototype[name];
                     else
-                        globalThis[key].prototype[name] = innards.snapshots[`prototype.${key}.${name}`]
+                        globalThis[key].prototype[name] = innards.snapshots[`prototype.${key}.${name}`];
                 }
             }
             
@@ -635,22 +666,31 @@
             for (let i = 0; i < Object.keys(classes).length; i++) {
                 if (skipClasses) break; // skip contraction if told to
                 
-                const className = Object.keys(classes)[i]
+                const className = Object.keys(classes)[i];
 
                 // skip deletion if there's a snapshot of it set to `true`,
                 // regardless if deletion is forced
-                if (`value.${className}` in innards.snapshots && innards.snapshots[`value.${className}`] === true) continue
+                if (`value.${className}` in innards.snapshots && innards.snapshots[`value.${className}`] === true) continue;
 
-                delete globalThis[className]
+                delete globalThis[className];
             }
-            const endTime = innards.now()
-            console.log(`contracted methods in ${endTime - startTime}ms`)
+            const endTime = innards.now();
+            if (!silent) console.log(`contracted methods in ${endTime - startTime}ms`);
         }
     }
+    if (preexpand) protoplus.expand({
+        override,
+        skipProtos,
+        skipGlobals,
+        skipClasses
+    });
 
     globalThis.protoplus = protoplus;
 
-    console.log(`proto+ v${innards.version} loaded!`);
+    if (!silent) console.log(`proto+ v${innards.version} loaded!`);
 
     return innards;
-})();
+})({
+    preexpand: true,
+    silent: true
+});
