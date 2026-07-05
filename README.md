@@ -2,9 +2,9 @@
 Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
 
 # Table of Contents
-- [How to Import (ES6 module)](https://github.com/sophb-ccjt/protoplus#how-to-import-es6-module)
-- [How to Import (CommonJS/WebJS module)](https://github.com/sophb-ccjt/protoplus#how-to-import-commonjswebjs-module)
-- [Quick Start](https://github.com/sophb-ccjt/protoplus#quick-start)
+- [How to Import (ES6 module)](https://github.com/sophb-chan/protoplus#how-to-import-es6-module)
+- [How to Import (CommonJS/WebJS module)](https://github.com/sophb-chan/protoplus#how-to-import-commonjswebjs-module)
+- [Quick Start](https://github.com/sophb-chan/protoplus#quick-start)
 
 # How to Import (ES6 module)
 ## In browsers via HTML or JS:
@@ -12,7 +12,7 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
 ### Via HTML
 ```html
 <script
-  src="https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs"
+  src="https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.mjs"
   type="module"
 ></script>
 ```
@@ -23,7 +23,7 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
   // import proto+
 
   const script = document.createElement('script');
-  script.src = "https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs";
+  script.src = "https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.mjs";
   script.type = "module";
   document.head.appendChild(script);
 })();
@@ -33,12 +33,12 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
 Install proto+ (if you haven't already):
 
 ```shell
-npm install git+https://github.com/sophb-ccjt/protoplus.git
+npm install git+https://github.com/sophb-chan/protoplus.git
 ```
 
 or alternatively, use `yarn`:
 ```shell
-yarn add sophb-ccjt/protoplus
+yarn add sophb-chan/protoplus
 ```
 
 then add this code to the top of your script file:
@@ -49,7 +49,7 @@ import { protoplus } from 'protoplus';
 ## In Deno
 Add this code to the top of your script file:
 ```js
-import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.mjs';
+import { protoplus } from 'https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.mjs';
 ```
 
 
@@ -59,7 +59,7 @@ import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/
 ### Via HTML
 ```html
 <script
-  src="https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js"
+  src="https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.js"
 ></script>
 ```
 
@@ -69,7 +69,7 @@ import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/
   // import proto+
 
   const script = document.createElement('script');
-  script.src = "https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js";
+  script.src = "https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.js";
   document.head.appendChild(script);
 })();
 ```
@@ -78,12 +78,12 @@ import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/
 Install proto+ (if you haven't already):
 
 ```shell
-npm install git+https://github.com/sophb-ccjt/protoplus.git
+npm install git+https://github.com/sophb-chan/protoplus.git
 ```
 
 or alternatively, use `yarn`:
 ```shell
-yarn add sophb-ccjt/protoplus
+yarn add sophb-chan/protoplus
 ```
 
 then add this code to the top of your script file:
@@ -94,7 +94,7 @@ import { protoplus } from 'protoplus';
 ## In Deno
 Add this code to the top of your script file:
 ```js
-import { protoplus } from 'https://rawcdn.githack.com/sophb-ccjt/protoplus/refs/heads/main/protoplus.js';
+import { protoplus } from 'https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.js';
 ```
 
 
