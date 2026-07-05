@@ -100,11 +100,11 @@
 			},
 
 			Object: {
-				isPlain: function () {
+				isPlain: function (input) {
 					return (
-						this !== null &&
-						typeof this === 'object' &&
-						!Array.isArray(this)
+						input !== null &&
+						typeof input === 'object' &&
+						!Array.isArray(input)
 					);
 				},
 
@@ -761,7 +761,7 @@
 			const endTime = now();
 			console.log(`contracted methods in ${endTime - startTime}ms`);
 		},
-		version: '1.4.1',
+		version: '1.4.2',
 	};
 
 	if (preexpand)

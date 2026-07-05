@@ -1,6 +1,6 @@
 {
     "name": "protoplus",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "description": "A multi-environment module that expands JavaScript's prototype methods, global helper functions and others.",
     "main": "protoplus.mjs",
     "type": "module",
