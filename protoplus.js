@@ -6,13 +6,13 @@
 	skipGlobals = false,
 	skipClasses = false,
 } = {}) => {
-	const innards = {
-		now:
-			typeof globalThis.performance?.now === 'function'
-				? () => Math.trunc(performance.now()) // use performance.now when available
-				: Date.now,
-		snapshots: {},
-	};
+	// innards
+	const now =
+		typeof globalThis.performance?.now === 'function'
+			? () => Math.trunc(performance.now()) // use performance.now when available
+			: Date.now;
+	const snapshots = {};
+
 	const protoplus = {
 		global: {
 			JSON: {
@@ -761,7 +761,7 @@
 			const endTime = now();
 			console.log(`contracted methods in ${endTime - startTime}ms`);
 		},
-		version: '1.4.0',
+		version: '1.4.1',
 	};
 
 	if (preexpand)
