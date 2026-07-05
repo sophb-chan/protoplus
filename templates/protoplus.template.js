@@ -6,13 +6,14 @@
     skipGlobals = false,
     skipClasses = false
 } = {}) => {
-    const innards = {
-        now: typeof globalThis.performance?.now === "function"
+    // innards
+    const now = typeof globalThis.performance?.now === "function"
             ? ()=>Math.trunc(performance.now()) // use performance.now when available
-            : Date.now,
-        snapshots: {}
-    }
+            : Date.now;
+    const snapshots = {};
+
     // protoplus goes here
+
     if (preexpand) protoplus.expand({
         override,
         skipProtos,
