@@ -10,8 +10,7 @@
         now: typeof globalThis.performance?.now === "function"
             ? ()=>Math.trunc(performance.now()) // use performance.now when available
             : Date.now,
-        snapshots: {},
-        version: '1.3.1'
+        snapshots: {}
     }
     // protoplus goes here
     if (preexpand) protoplus.expand({
@@ -23,9 +22,8 @@
 
     globalThis.protoplus = protoplus;
 
-    if (!silent) console.log(`proto+ v${innards.version} loaded!`);
-
-    return innards;
+    if (!silent) console.log(`proto+ v${protoplus.version} loaded!`);
+    return protoplus;
 })({
     preexpand: true,
     silent: true

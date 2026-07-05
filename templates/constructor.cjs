@@ -31,7 +31,7 @@ const modulePretty = synchronizedPrettier.format(moduleFilled, {
 	parser: 'babel',
 	...prettierRules,
 });
-const webPretty = synchronizedPrettier.format(webFilled, { parser: 'babel' });
+const webPretty = synchronizedPrettier.format(webFilled, { parser: 'babel', });
 fs.writeFileSync(path.join(__dirname, '../protoplus.mjs'), modulePretty);
 fs.writeFileSync(path.join(__dirname, '../protoplus.js'), webPretty);
 
@@ -42,5 +42,5 @@ const packageJson = JSON.parse(
 packageJson.version = templateFiller.match(/(['"]?)version\1: "([^"]+)"/)[2];
 fs.writeFileSync(
 	path.join(__dirname, '../package.json'),
-	JSON.stringify(packageJson, null, 2)
+	JSON.stringify(packageJson, null, 4)
 );
