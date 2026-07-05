@@ -31,7 +31,10 @@ const modulePretty = synchronizedPrettier.format(moduleFilled, {
 	parser: 'babel',
 	...prettierRules,
 });
-const webPretty = synchronizedPrettier.format(webFilled, { parser: 'babel', });
+const webPretty = synchronizedPrettier.format(webFilled, {
+	parser: 'babel',
+	...prettierRules,
+});
 fs.writeFileSync(path.join(__dirname, '../protoplus.mjs'), modulePretty);
 fs.writeFileSync(path.join(__dirname, '../protoplus.js'), webPretty);
 
