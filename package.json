@@ -1,11 +1,12 @@
 {
 	"name": "protoplus",
-	"version": "1.1.0",
+	"version": "1.4.0",
 	"description": "A multi-environment module that expands JavaScript's prototype methods, global helper functions and others.",
 	"main": "protoplus.mjs",
 	"type": "module",
 	"scripts": {
-		"test": "echo \"test\""
+		"test": "echo 'test'",
+		"build": "npm i prettier @prettier/sync && node ./templates/constructor.cjs"
 	},
 	"keywords": [
 		"node",
@@ -14,8 +15,13 @@
 		"browser",
 		"webjs",
 		"multienvironment",
-		"crossenvironment"
+		"crossenvironment",
+		"prototype"
 	],
 	"author": "soph b <sophb.ccjt@proton.me>",
-	"license": "GNU AGPL v3"
+	"license": "GNU AGPL v3",
+	"dependencies": {
+		"@prettier/sync": "^0.6.1",
+		"prettier": "^3.9.4"
+	}
 }

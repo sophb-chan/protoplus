@@ -209,9 +209,7 @@ const protoplus = {
 						"Start index must be lesser than the target array's length.",
 					);
 				if (Number.isInteger(step))
-					throw new RangeError(
-						"Step size must be an integer",
-					);
+					throw new RangeError("Step size must be an integer");
 				if (step < 1)
 					throw new RangeError(
 						"Step size must be greater than or equal to 1.",
