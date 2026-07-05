@@ -80,11 +80,11 @@ const protoplus = {
 		},
 
 		Object: {
-			isPlain: function () {
+			isPlain: function(input) {
 				return (
-					this !== null &&
-					typeof this === "object" &&
-					!Array.isArray(this)
+					input !== null &&
+					typeof input === "object" &&
+					!Array.isArray(input)
 				);
 			},
 
