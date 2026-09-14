@@ -164,13 +164,9 @@ const protoplus = {
 
 	proto: {
 		Audio: {
-			resume: function () {
-				if (this.paused) {
-					this.play();
-					return true;
-				} else {
-					return false;
-				}
+			stop: function () {
+				this.pause();
+				this.currentTime = 0;
 			},
 		},
 
