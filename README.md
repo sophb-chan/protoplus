@@ -1,5 +1,5 @@
 # proto+
-Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
+Proto+ (a.k.a. protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
 
 # Table of Contents
 - [How to Import (ES6 module)](https://github.com/sophb-chan/protoplus#how-to-import-es6-module)
