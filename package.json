@@ -18,9 +18,9 @@
         "crossenvironment",
         "prototype"
     ],
-    "author": "sophb.chan <sophb.ccjt@proton.me>",
-    "license": "GNU AGPL v3",
-    "dependencies": {
+    "author": "sophb.chan <sophb.chan@proton.me>",
+    "license": "MIT",
+    "devDependencies": {
         "@prettier/sync": "^0.6.1",
         "prettier": "^3.9.6"
     }
