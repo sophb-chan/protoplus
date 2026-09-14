@@ -804,6 +804,6 @@
 	if (!silent) console.log(`proto+ v${protoplus.version} loaded!`);
 	return protoplus;
 })({
-	preexpand: true,
+	preexpand: false,
 	silent: true,
 });
