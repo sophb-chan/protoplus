@@ -185,13 +185,9 @@
 
 		proto: {
 			Audio: {
-				resume: function () {
-					if (this.paused) {
-						this.play();
-						return true;
-					} else {
-						return false;
-					}
+				stop: function () {
+					this.pause();
+					this.currentTime = 0;
 				},
 			},
 
@@ -788,7 +784,7 @@
 			const endTime = now();
 			console.log(`contracted methods in ${endTime - startTime}ms`);
 		},
-		version: '1.8.0',
+		version: '1.9.0',
 	};
 
 	if (preexpand)
