@@ -12,7 +12,7 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
 ### Via HTML
 ```html
 <script
-  src="https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.mjs"
+  src="https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs"
   type="module"
 ></script>
 ```
@@ -23,7 +23,7 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
   // import proto+
 
   const script = document.createElement('script');
-  script.src = "https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.mjs";
+  script.src = "https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs";
   script.type = "module";
   document.head.appendChild(script);
 })();
@@ -49,7 +49,7 @@ import protoplus from 'protoplus';
 ### Via HTML
 ```html
 <script
-  src="https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.js"
+  src="https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.js"
 ></script>
 ```
 
@@ -59,7 +59,7 @@ import protoplus from 'protoplus';
   // import proto+
 
   const script = document.createElement('script');
-  script.src = "https://rawcdn.githack.com/sophb-chan/protoplus/refs/heads/main/protoplus.js";
+  script.src = "https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.js";
   document.head.appendChild(script);
 })();
 ```
