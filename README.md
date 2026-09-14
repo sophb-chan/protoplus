@@ -30,17 +30,11 @@ Proto+ (aka protoplus) is a multi-enviroment module that expands JavaScript's pr
 ```
 
 ## In Node.js, Bun, or front-end frameworks like React/Next.js:
-(THIS METHOD IS LIKELY TO NOT WORK! I'm working on a fix for it ASAP, thanks for the patience!)
 
 Install proto+ (if you haven't already):
 
 ```shell
-npm install git+https://github.com/sophb-chan/protoplus.git
-```
-
-or alternatively, use `yarn`:
-```shell
-yarn add sophb-chan/protoplus
+npm install protoplus
 ```
 
 then add either one of these lines of code to the top of your script file:
@@ -71,22 +65,17 @@ import protoplus from 'protoplus';
 ```
 
 ## In Node.js, Bun, or front-end frameworks like React/Next.js:
-(THIS METHOD IS LIKELY TO NOT WORK! I'm working on a fix for it ASAP, thanks for the patience!)
 
 Install proto+ (if you haven't already):
 
 ```shell
-npm install git+https://github.com/sophb-chan/protoplus.git
+npm install protoplus
 ```
 
-or alternatively, use `yarn`:
-```shell
-yarn add sophb-chan/protoplus
-```
-
-then add this line of code to the top of your script file:
+then add either one of these lines of code to the top of your script file:
 ```js
 const { protoplus } = require('protoplus');
+const protoplus = require('protoplus').default;
 ```
 
 
