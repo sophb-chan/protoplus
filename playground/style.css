@@ -1,0 +1,29 @@
+html, body {
+	margin: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+body {
+	background: #001;
+	font-family: monospace;
+	color: #fff;
+	font-size: 16px;
+}
+code {
+	padding: 4px;
+	font-weight: bold;
+	background: #004;
+	border: solid 1px #006;
+}
+@media (prefers-color-scheme: light) {
+	body {
+		background: #ccc;
+		color: #000;
+	}
+	code {
+		background: #889;
+		border-color: #667;
+	}
+}
+

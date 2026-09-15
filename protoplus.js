@@ -254,6 +254,9 @@
 					}
 					return stridedArray;
 				},
+				dedup: function () {
+					return this.filter((v, i) => this.indexOf(v) === i);
+				},
 			},
 
 			HTMLCollection: {
@@ -784,7 +787,7 @@
 			const endTime = now();
 			console.log(`contracted methods in ${endTime - startTime}ms`);
 		},
-		version: '1.9.0',
+		version: '1.10.0',
 	};
 
 	if (preexpand)
