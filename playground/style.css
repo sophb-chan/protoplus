@@ -9,23 +9,21 @@ body {
 	font-family: monospace;
 	color: #fff;
 	font-size: 16px;
+	text-align: center;
 }
 code {
 	padding: 4px;
 	font-weight: bold;
 	background: #004;
 	border: solid 1px #006;
+	border-radius: 2px;
 }
 @media (prefers-color-scheme: light) {
 	body {
 		background: #ccc;
 		color: #000;
-		font-family: monospace;
-		font-size: 16px;
 	}
 	code {
-		padding: 4px;
-		font-weight: bold;
 		background: #889;
 		border-color: #667;
 	}
