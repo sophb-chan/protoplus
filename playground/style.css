@@ -20,7 +20,7 @@ code {
 }
 @media (prefers-color-scheme: light) {
 	body {
-		background: #ccc;
+		background: #ddf;
 		color: #000;
 	}
 	code {
