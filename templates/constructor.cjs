@@ -72,6 +72,6 @@ fs.writeFileSync(
 
 // copy protoplus to playground page
 console.log('[Playground] Copying protoplus to playground page...');
-fs.writeFileSync(path.join(__dirname, '../playground/protoplus.js'), modulePretty);
+fs.writeFileSync(path.join(__dirname, '../playground/protoplus.js'), webPretty);
 
 console.log('Done!');
