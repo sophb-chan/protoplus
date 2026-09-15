@@ -12,11 +12,11 @@ body {
 	text-align: center;
 }
 code {
-	padding: 4px;
+	padding: 5px;
 	font-weight: bold;
-	background: #004;
-	border: solid 1px #006;
-	border-radius: 2px;
+	background: #115;
+	border: solid 1px #337;
+	border-radius: 8px;
 }
 @media (prefers-color-scheme: light) {
 	body {
@@ -24,8 +24,8 @@ code {
 		color: #000;
 	}
 	code {
-		background: #889;
-		border-color: #667;
+		background: #abcdef;
+		border-color: #123456;
 	}
 }
 
