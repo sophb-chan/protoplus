@@ -20,8 +20,12 @@ code {
 	body {
 		background: #ccc;
 		color: #000;
+		font-family: monospace;
+		font-size: 16px;
 	}
 	code {
+		padding: 4px;
+		font-weight: bold;
 		background: #889;
 		border-color: #667;
 	}
