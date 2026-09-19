@@ -69,7 +69,7 @@ const protoplus = {
 				radToDeg: rad => (rad * 180) / Math.PI,
 				degToRad: deg => (deg * Math.PI) / 180,
 			},
-			root: (radicand, index = 2) => radicand ** 1 / index,
+			root: (radicand, index = 2) => radicand ** (1 / index),
 			randomMinMax: (min, max) => Math.random() * (max - min) + min,
 		},
 
@@ -762,7 +762,7 @@ const protoplus = {
 		const endTime = now();
 		console.log(`contracted methods in ${endTime - startTime}ms`);
 	},
-	version: '1.10.0',
+	version: '1.10.1',
 };
 
 export default protoplus;
