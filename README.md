@@ -5,6 +5,7 @@ Proto+ (a.k.a. protoplus) is a multi-enviroment module that expands JavaScript's
 - [How to Import (ES6 module)](https://github.com/sophb-chan/protoplus#how-to-import-es6-module)
 - [How to Import (CommonJS/WebJS module)](https://github.com/sophb-chan/protoplus#how-to-import-commonjswebjs-module)
 - [Quick Start](https://github.com/sophb-chan/protoplus#quick-start)
+- [Playground](https://github.com/sophb-chan/protoplus#playground)
 
 # How to Import (ES6 module)
 ## In browsers via HTML or JS:
@@ -79,8 +80,11 @@ const protoplus = require('protoplus').default;
 ```
 
 
-# Quick Start
+## Quick Start
 After importing the script to your project, you can use `protoplus.expand()` to expand prototypes and others, and `protoplus.contract()` to restore them to their default/previous value.
 It's recommended to run `protoplus.expand()` after the import statement (if you're using proto+ in a browser and imported it via HTML, run `protoplus.expand()` at the top of your script file).
 
 You can also use `protoplus.expand({ skipClasses: true })` to only expand prototypes and global helpers.
+
+## Playground
+You can use the [proto+ playground](https://protoplus-playground.vercel.app/) to test out proto+ for yourself in a safe place.
