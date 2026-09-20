@@ -340,9 +340,7 @@ const protoplus = {
 				else return undefined; // unknown
 			},
 			lines() {
-				const lineEnding = String(this).getLineEnding();
-				if (lineEnding) return this.split(lineEnding);
-				else return this; // no lines
+				return this.split(/\r?\n/); // no lines
 			},
 			compactPunct() {
 				const puncts = {
@@ -738,5 +736,5 @@ const protoplus = {
 		const endTime = now();
 		if (!options.silent) console.log(`contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.11.1",
+	version: "1.11.2-build1",
 };
