@@ -1,4 +1,4 @@
-name: Construct modules from templates and filler
+name: Construct modules
 
 on:
     push:

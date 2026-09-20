@@ -1,7 +1,10 @@
 name: Release to GitHub (on version bump)
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Construct modules"]
+    types:
+      - completed
     branches:
       - main
 
