@@ -1,14 +1,14 @@
 const protoplus = {
 	global: {
 		JSON: {
-			isJSON: function (obj) {
+			isJSON(obj) {
 				return (
 					obj !== null &&
 					typeof obj === "object" &&
 					!Array.isArray(obj)
 				);
 			},
-			iterate: function (obj, callback) {
+			iterate(obj, callback) {
 				if (!JSON.isJSON(obj))
 					throw new TypeError(
 						'Argument "obj" must be a plain object.',
@@ -29,7 +29,7 @@ const protoplus = {
 		},
 
 		Array: {
-			shuffle: (arr) => {
+			shuffle(arr) {
 				if (!Array.isArray(arr)) return;
 				// Durstenfield shuffle script not made by me
 				// Code from https://stackoverflow.com/a/12646864
@@ -42,7 +42,7 @@ const protoplus = {
 				}
 				return arr;
 			},
-			genericType: (array) => {
+			genericType(array) {
 				if (array.length === 0) return undefined;
 
 				const baseType = Object.typeOf(array[0]);
@@ -68,7 +68,7 @@ const protoplus = {
 		},
 
 		Number: {
-			testFloatPrecision: () => {
+			testFloatPrecision() {
 				for (let i = 0; i < 5e2; i++) {
 					const baseNumber = 1;
 					const testNumber = parseFloat(`0.${"9".repeat(i)}`);
@@ -83,7 +83,7 @@ const protoplus = {
 		},
 
 		Object: {
-			isPlain: function (input) {
+			isPlain(input) {
 				return (
 					input !== null &&
 					typeof input === "object" &&
@@ -91,7 +91,7 @@ const protoplus = {
 				);
 			},
 
-			typeOf: (thing) => {
+			typeOf(thing) {
 				if (typeof thing === "object")
 					if (thing === null) return "null";
 					else if (Array.isArray(thing)) return "array";
@@ -164,33 +164,33 @@ const protoplus = {
 
 	proto: {
 		Audio: {
-			stop: function () {
+			stop() {
 				this.pause();
 				this.currentTime = 0;
 			},
 		},
 
 		Array: {
-			last: function () {
+			last() {
 				return this[this.length - 1];
 			},
-			shuffle: function () {
+			shuffle() {
 				const shuffled = Array.shuffle(this);
 				shuffled.forEach((item, i) => {
 					this[i] = item;
 				});
 				return shuffled;
 			},
-			toShuffled: function () {
+			toShuffled() {
 				return Array.shuffle([...this]);
 			},
-			random: function () {
+			random() {
 				return this[Math.floor(Math.random() * this.valueOf().length)];
 			},
-			genericType: function () {
+			genericType() {
 				return Array.genericType(this);
 			},
-			advSort: function (compareFn) {
+			advSort(compareFn) {
 				const arrType = this.genericType();
 
 				if (compareFn !== undefined) {
@@ -207,7 +207,7 @@ const protoplus = {
 				}
 				return this;
 			},
-			stride: function (start = 0, end, step = 1) {
+			stride(start = 0, end, step = 1) {
 				end ??= array.length;
 				if (start < 0)
 					throw new RangeError(
@@ -231,19 +231,19 @@ const protoplus = {
 				}
 				return stridedArray;
 			},
-			dedup: function () {
+			dedup() {
 				return this.filter((v, i) => this.indexOf(v) === i);
 			},
 		},
 
 		HTMLCollection: {
-			last: function () {
+			last() {
 				return this[this.length - 1];
 			},
 		},
 
 		Boolean: {
-			format: function ({ type = "literal" }) {
+			format({ type = "literal" }) {
 				const bool = this.valueOf();
 				const types = Boolean.formatTypes;
 
@@ -252,13 +252,13 @@ const protoplus = {
 			},
 		},
 		String: {
-			last: function () {
+			last() {
 				return this[this.length - 1];
 			},
-			escapeRegex: function () {
+			escapeRegex() {
 				return RegExp.escape(String(this));
 			},
-			trimLeft: function (...strings) {
+			trimLeft(...strings) {
 				if (strings.length < 1) {
 					strings = [" ", "\t", "\n", "\r"];
 				}
@@ -271,7 +271,7 @@ const protoplus = {
 				}
 				return finalStr;
 			},
-			trimStart: function (...strings) {
+			trimStart(...strings) {
 				if (strings.length < 1) {
 					strings = [" ", "\t", "\n", "\r"];
 				}
@@ -284,7 +284,7 @@ const protoplus = {
 				}
 				return finalStr;
 			},
-			trimRight: function (...strings) {
+			trimRight(...strings) {
 				if (strings.length < 1) {
 					strings = [" ", "\t", "\n", "\r"];
 				}
@@ -297,7 +297,7 @@ const protoplus = {
 				}
 				return finalStr;
 			},
-			trimEnd: function (...strings) {
+			trimEnd(...strings) {
 				if (strings.length < 1) {
 					strings = [" ", "\t", "\n", "\r"];
 				}
@@ -310,41 +310,41 @@ const protoplus = {
 				}
 				return finalStr;
 			},
-			trim: function (...strings) {
+			trim(...strings) {
 				return this.trimStart(...strings).trimEnd(...strings);
 			},
-			reverse: function () {
+			reverse() {
 				return this.split("").reverse().join("");
 			},
-			erase: function (...strings) {
+			erase(...strings) {
 				return strings.reduce(
 					(finalStr, str) => finalStr.replace(str, ""),
 					this.valueOf(),
 				);
 			},
-			eraseAll: function (...strings) {
+			eraseAll(...strings) {
 				return strings.reduce(
 					(finalStr, str) => finalStr.replaceAll(str, ""),
 					this.valueOf(),
 				);
 			},
-			chars: function () {
+			chars() {
 				return this.split("");
 			},
-			words: function () {
+			words() {
 				return this.split(" ");
 			},
-			getLineEnding: function () {
+			getLineEnding() {
 				if (/\r\n/.test(this.valueOf())) return "\r\n";
 				else if (/[^\r]\n/.test(this.valueOf)) return "\n";
 				else return undefined; // unknown
 			},
-			lines: function () {
+			lines() {
 				const lineEnding = String(this).getLineEnding();
 				if (lineEnding) return this.split(lineEnding);
 				else return this; // no lines
 			},
-			compactPunct: function () {
+			compactPunct() {
 				const puncts = {
 					"...": "…",
 					"---": "—",
@@ -370,14 +370,14 @@ const protoplus = {
 					this.valueOf(),
 				);
 			},
-			forEach: function (callback, separator = "") {
+			forEach(callback, separator = "") {
 				const separated = this.split(separator);
 				for (let i = 0; i < separated.length; i++) {
 					callback(separated[i], i, this.valueOf());
 				}
 				return;
 			},
-			toTitleCase: function (separator = " ") {
+			toTitleCase(separator = " ") {
 				const str = String(this),
 					finalStr = [];
 
@@ -387,13 +387,13 @@ const protoplus = {
 
 				return finalStr.join(separator);
 			},
-			startsWithAmount: function (char) {
+			startsWithAmount(char) {
 				for (let i = 0; i < this.length; i++) {
 					if (this[i] !== char) return i;
 				}
 				return this.length;
 			},
-			endsWithAmount: function (char) {
+			endsWithAmount(char) {
 				const reversed = this.reverse();
 				for (let i = 0; i < this.length - 1; i++) {
 					if (reversed[i] !== char) return i;
@@ -402,7 +402,7 @@ const protoplus = {
 				}
 				return this.length;
 			},
-			amountOf: function (substring) {
+			amountOf(substring) {
 				let matches = 0;
 				for (let i = 0; i < this.length; i++) {
 					const searchStr = this.substring(i, i + substring.length);
@@ -410,10 +410,10 @@ const protoplus = {
 				}
 				return matches;
 			},
-			cleanup: function () {
+			cleanup() {
 				return this.valueOf().normalize("NFKD").replace(/\p{M}/gu, "");
 			},
-			escapeHTML: function () {
+			escapeHTML() {
 				const entities = {
 					'&': '&amp;',
 					'<': '&lt;',
@@ -430,30 +430,30 @@ const protoplus = {
 		},
 
 		Number: {
-			evenize: function () {
+			evenize() {
 				// snaps to nearest even number
 				return Math.round(this / 2) * 2;
 			},
-			oddize: function () {
+			oddize() {
 				// snaps to nearest odd number
 				return Math.round((this - 1) / 2) * 2 + 1;
 			},
-			fix: function (digits) {
+			fix(digits) {
 				return parseFloat(this.toFixed(digits));
 			},
-			floor: function () {
+			floor() {
 				return Math.floor(this.valueOf());
 			},
-			ceil: function () {
+			ceil() {
 				return Math.ceil(this.valueOf());
 			},
-			round: function () {
+			round() {
 				return Math.round(this.valueOf());
 			},
-			clamp: function (min, max) {
+			clamp(min, max) {
 				return Math.max(min, Math.min(max, this));
 			},
-			inRange: function (
+			inRange(
 				min,
 				max = min,
 				minInclusive = true,
@@ -540,7 +540,7 @@ const protoplus = {
 					seconds: () => new Date(getTimestamp()).getSeconds(),
 					milliseconds: () =>
 						new Date(getTimestamp()).getMilliseconds(),
-					meridiem: () => {
+					meridiem() {
 						if (isDefined(is24hour) && !is24hour) {
 							return new Date()
 								.toLocaleTimeString("en-US", {
@@ -755,5 +755,5 @@ const protoplus = {
 		const endTime = now();
 		if (!options.silent) console.log(`contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.11.0",
+	version: "1.11.1",
 };
