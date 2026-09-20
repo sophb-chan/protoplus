@@ -420,7 +420,7 @@ const protoplus = {
 					'>': '&gt;',
 					'"': '&quot;',
 					"'": '&apos;',
-				}
+				};
 				let escapedText = this.valueOf();
 				for (const [raw, entity] of Object.entries(entities)) {
 					escapedText = escapedText.replaceAll(raw, entity);
@@ -484,44 +484,29 @@ const protoplus = {
 					"Saturday",
 				];
 
-				const getTimestamp = timestampFn ? timestampFn : Date.now;
 				const getHour = () => {
-					switch (is24hour) {
-						case true:
-							return parseInt(
-								new Date(getTimestamp()).toLocaleTimeString(
-									"en-US",
-									{
-										hour12: false,
-										hour: "2-digit",
-									},
-								),
-							);
-
-						case false:
-							return parseInt(
-								new Date(getTimestamp()).toLocaleTimeString(
-									"en-US",
-									{
-										hour12: true,
-										hour: "2-digit",
-									},
-								),
-							);
-
-						default:
-							return parseInt(
-								new Date(getTimestamp()).toLocaleTimeString(
-									undefined,
-									{
-										hour: "2-digit",
-									},
-								),
-							);
-					}
+					if (typeof is24hour === 'boolean')
+						return parseInt(
+							new Date(getTimestamp()).toLocaleTimeString(
+								"en-US",
+								{
+									hour12: !is24hour,
+									hour: "2-digit",
+								},
+							),
+						);
+					else
+						return parseInt(
+							new Date(getTimestamp()).toLocaleTimeString(
+								undefined,
+								{
+									hour: "2-digit",
+								},
+							),
+						);
 				};
 				this.times = {
-					timestamp: getTimestamp,
+					timestamp: timestampFn,
 					weekDay: () => new Date(getTimestamp()).getDay() + 1,
 					day: () => new Date(getTimestamp()).getDate(),
 					dayOfWeek: () => new Date(getTimestamp()).getDay(),
@@ -531,15 +516,13 @@ const protoplus = {
 							new Date(getTimestamp()).getMonth() + 1,
 							0,
 						).getDate(),
-					weekName: () =>
-						this.weekNames[new Date(getTimestamp()).getDay()],
+					weekName: () => this.weekNames[new Date(getTimestamp()).getDay()],
 					month: () => new Date(getTimestamp()).getMonth() + 1,
 					year: () => new Date(getTimestamp()).getFullYear(),
 					hours: getHour,
 					minutes: () => new Date(getTimestamp()).getMinutes(),
 					seconds: () => new Date(getTimestamp()).getSeconds(),
-					milliseconds: () =>
-						new Date(getTimestamp()).getMilliseconds(),
+					milliseconds: () => new Date(getTimestamp()).getMilliseconds(),
 					meridiem() {
 						if (isDefined(is24hour) && !is24hour) {
 							return new Date()
@@ -717,14 +700,14 @@ const protoplus = {
 			}
 		}
 
-		// iterate thru prototypes
+		// Iterate thru prototypes
 		for (const [key, defs] of Object.entries(prototypes)) {
-			if (skipProtos) break; // skip contraction if told to
-			if (!globalThis[key]) continue; // skip if the parent doesn't exist in this environment
+			if (skipProtos) break; // Skip contraction if told to
+			if (!globalThis[key]) continue; // Skip if the parent doesn't exist in this environment
 
-			// define functions
-			for (const [name, def] of Object.entries(defs)) {
-				// delete definition if erasing is forced or there is no snapshot
+			// Define functions
+			for (const name of Object.keys(defs)) {
+			// Delete definition if erasing is forced or there is no snapshot
 				if (forceErase || !snapshots[`prototype.${key}.${name}`])
 					delete globalThis[key].prototype[name];
 				else {

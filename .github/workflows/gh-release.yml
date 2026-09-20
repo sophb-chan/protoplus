@@ -17,23 +17,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for changes in `package.json`
+      - name: Check for `package.json` changes # Exits with code 1 on no change
         id: change-check
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            package:
-              - 'package.json'
+        run: |
+          if git diff HEAD~1 --name-only | grep -q "^package\.json$"; then
+            echo "Changes detected in package.json"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes in package.json"
+            echo "changed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        continue-on-error: true
+
+      - name: Skip Release (no `package.json` changes)
+        if: steps.change-check.outcome != 'success'
+        run: echo "Skipping release - no package.json changes"
+
+      - name: Get version and create release
+        if: steps.change-check.outcome == 'success'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release create "v$VERSION" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get version from `package.json`
-        if: steps.change-check.outputs.package == 'true'
         id: get-version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Version extracted: v$VERSION"
 
       - name: Create GitHub Release
-        if: steps.change-check.outputs.package == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
