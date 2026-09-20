@@ -24,16 +24,16 @@ jobs:
               - 'package.json'
 
       - name: Get version from `package.json`
-        if: steps:change-check.outputs.package == 'true'
+        if: steps.change-check.outputs.package == 'true'
         id: get-version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        if: steps:change-check.outputs.package == 'true'
+        if: steps.change-check.outputs.package == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps:get-version.outputs.version }}
-          name: ${{ steps:get-version.outputs.version }}
+          tag_name: ${{ steps.get-version.outputs.version }}
+          name: ${{ steps.get-version.outputs.version }}
           generate_release_notes: true
