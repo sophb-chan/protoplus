@@ -682,7 +682,7 @@ const protoplus = {
 			globalThis[className] = classDef;
 		}
 		const endTime = now();
-		console.log(`expanded methods in ${endTime - startTime}ms`);
+		if (!options.silent) console.log(`expanded methods in ${endTime - startTime}ms`);
 	},
 	contract: ({
 		forceErase = false,
@@ -753,7 +753,7 @@ const protoplus = {
 			delete globalThis[className];
 		}
 		const endTime = now();
-		console.log(`contracted methods in ${endTime - startTime}ms`);
+		if (!options.silent) console.log(`contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.10.1",
+	version: "1.11.0",
 };
