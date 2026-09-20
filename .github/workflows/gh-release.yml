@@ -17,23 +17,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for changes in `package.json`
-        id: change-check
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            package:
-              - 'package.json'
+#      - name: Check for changes in `package.json`
+#        id: change-check
+#        uses: dorny/paths-filter@v3
+#        with:
+#          filters: |
+#            package:
+#              - 'package.json'
 
       - name: Get version from `package.json`
-        if: steps.change-check.outputs.package == 'true'
+#        if: steps.change-check.outputs.package == 'true'
         id: get-version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        if: steps.change-check.outputs.package == 'true'
+#        if: steps.change-check.outputs.package == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
