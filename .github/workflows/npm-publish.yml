@@ -1,8 +1,12 @@
 name: Publish to NPM (on GitHub Release)
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Release to GitHub (on version bump)"]
+    types:
+      - completed
+    branches:
+      - main
 
 jobs:
   publish:
