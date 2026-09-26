@@ -736,5 +736,5 @@ const protoplus = {
 		const endTime = now();
 		if (!options.silent) console.log(`contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.11.2-build2",
+	version: "1.11.2-build3",
 };
