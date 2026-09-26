@@ -20,31 +20,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for `package.json` changes # Exits with code 1 on no change
-        id: change-check
-        run: |
-          if git diff HEAD~1 --name-only | grep -q "^package\.json$"; then
-            echo "Changes detected in package.json"
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes in package.json"
-            echo "changed=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-        continue-on-error: true
-
-      - name: Skip Release (no `package.json` changes)
-        if: steps.change-check.outcome != 'success'
-        run: echo "Skipping release - no package.json changes"
-
-      - name: Get version and create release
-        if: steps.change-check.outcome == 'success'
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          gh release create "v$VERSION" --generate-notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Get version from `package.json`
         id: get-version
         run: |
