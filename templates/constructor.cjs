@@ -25,7 +25,7 @@ const templateFiller = fs.readFileSync(
 
 // =============== Construct =============== //
 console.log('[Construct] Constructing modules...');
-const protoplusCommentRegex = /\/\/[\t ]*protoplus goes here(?:[\t ]*\/\/)|\/\*\s*protoplus goes here\s*\*\//m;
+const protoplusCommentRegex = /\/\/[\t ]*protoplus goes here(?:[\t ]*\/\/)?|\/\*\s*protoplus goes here\s*\*\//m;
 
 const ES6constructed = ES6template.replace(protoplusCommentRegex, templateFiller);
 const webConstructed = webTemplate.replace(protoplusCommentRegex, templateFiller);
