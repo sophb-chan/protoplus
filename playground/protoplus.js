@@ -781,7 +781,7 @@
 
 	globalThis.protoplus = protoplus;
 
-	if (!silent) console.log(`proto+ v${protoplus.version} loaded!`);
+	if (!options.silent) console.log(`proto+ v${protoplus.version} loaded!`);
 	return protoplus;
 })({
 	preexpand: false,
