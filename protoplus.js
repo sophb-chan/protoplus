@@ -785,5 +785,5 @@
 	return protoplus;
 })({
 	preexpand: false,
-	silent: true,
+	silent: false,
 });
