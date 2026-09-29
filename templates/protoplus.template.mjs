@@ -8,12 +8,12 @@ const snapshots = {};
 
 const options = {
 	silent: true,
-	preexpand: false
+	preexpand: false,
 };
 
 export default protoplus;
 export {
 	protoplus
-}
+};
 
 console.log(`proto+ v${protoplus.version} loaded!`);
