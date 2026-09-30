@@ -16,15 +16,8 @@
 	const snapshots = {};
 
 	const protoplus = {
-		global: {
+		static: {
 			JSON: {
-				isJSON(obj) {
-					return (
-						obj !== null &&
-						typeof obj === 'object' &&
-						!Array.isArray(obj)
-					);
-				},
 				iterate(obj, callback) {
 					if (!JSON.isJSON(obj))
 						throw new TypeError(
@@ -631,26 +624,22 @@
 			skipGlobals = false,
 			skipClasses = false,
 		} = {}) => {
-			const globals = protoplus.global;
-			const prototypes = protoplus.proto;
-			const classes = protoplus.classes;
-
 			const startTime = now();
 
-			// iter globals
-			for (const [key, defs] of Object.entries(globals)) {
-				if (skipGlobals) break; // skip expansion if told to
-				if (!globalThis[key]) continue; // skip if the parent doesn't exist in this environment
+			// Iterate thru static methods
+			for (const [key, defs] of Object.entries(protoplus.static)) {
+				if (skipGlobals) break; // Skip expansion if told to
+				if (!globalThis[key]) continue; // Skip if the parent doesn't exist in this environment
 
-				// define functions
+				// Define functions
 				for (const [name, def] of Object.entries(defs)) {
-					if (globalThis[key][name] === def) continue; // skip definition if it's the same
+					if (globalThis[key][name] === def) continue; // Skip definition if it's the same
 
-					// store snapshot if definition already exists
+					// Store snapshot if definition already exists
 					if (name in globalThis[key]) {
-						snapshots[`global.${key}.${name}`] =
+						snapshots[`static.${key}.${name}`] =
 							globalThis[key][name];
-						if (!override) continue; // skip definition if overrides are disabled
+						if (!override) continue; // Skip definition if overrides are disabled
 					}
 					Object.defineProperty(globalThis[key], name, {
 						value: def,
@@ -661,20 +650,20 @@
 				}
 			}
 
-			// iterate thru protos
-			for (const [key, defs] of Object.entries(prototypes)) {
-				if (skipProtos) break; // skip expansion if told to
-				if (!globalThis[key]) continue; // skip if the parent doesn't exist in this environment
+			// Iterate thru prototypes
+			for (const [key, defs] of Object.entries(protoplus.proto)) {
+				if (skipProtos) break; // Skip expansion if told to
+				if (!globalThis[key]) continue; // Skip if the parent doesn't exist in this environment
 
-				// define functions
+				// Define functions
 				for (const [name, def] of Object.entries(defs)) {
 					if (globalThis[key].prototype[name] === def) continue; // skip definition if it's the same
 
-					// store snapshot if definition already exists
+					// Store snapshot if definition already exists
 					if (name in globalThis[key].prototype) {
 						snapshots[`prototype.${key}.${name}`] =
 							globalThis[key].prototype[name];
-						if (!override) continue; // skip definition if overrides are disabled
+						if (!override) continue; // Skip definition if overrides are disabled
 					}
 
 					Object.defineProperty(globalThis[key].prototype, name, {
@@ -686,21 +675,25 @@
 				}
 			}
 
-			// define classes
-			for (const [className, classDef] of Object.entries(classes)) {
-				if (skipClasses) break; // skip expansion if told to
+			// Define classes
+			for (const [className, classDef] of Object.entries(
+				protoplus.classes
+			)) {
+				if (skipClasses) break; // Skip expansion if told to
 
 				if (className in globalThis) {
-					// add to snapshots and skip definition if it already exists,
+					// Add to snapshots and skip definition if it already exists,
 					// regardless of override
-					snapshots[`value.${className}`] = true; // use true for existence
+					snapshots[`value.${className}`] = true; // Use true for existence
 					continue;
 				}
 				globalThis[className] = classDef;
 			}
 			const endTime = now();
 			if (!options.silent)
-				console.log(`expanded methods in ${endTime - startTime}ms`);
+				console.log(
+					`[proto+] Expanded methods in ${endTime - startTime}ms`
+				);
 		},
 		contract: ({
 			forceErase = false,
@@ -708,25 +701,21 @@
 			skipGlobals = false,
 			skipClasses = false,
 		} = {}) => {
-			const globals = protoplus.global;
-			const prototypes = protoplus.proto;
-			const classes = protoplus.classes;
-
 			const startTime = now();
 
 			// iterate thru globals
-			for (const [key, defs] of Object.entries(globals)) {
+			for (const [key, defs] of Object.entries(protoplus.static)) {
 				if (skipGlobals) break; // skip contraction if told to
 				if (!globalThis[key]) continue; // skip if the parent doesn't exist in this environment
 
 				// define functions
 				for (const [name, def] of Object.entries(defs)) {
-					if (forceErase || !snapshots[`global.${key}.${name}`])
+					if (forceErase || !snapshots[`static.${key}.${name}`])
 						// delete definition if erasing is forced or there is no snapshot
 						delete globalThis[key][name];
 					else {
 						Object.defineProperty(globalThis[key], name, {
-							value: snapshots[`global.${key}.${name}`],
+							value: snapshots[`static.${key}.${name}`],
 							writable: true,
 							configurable: true,
 							enumerable: false,
@@ -736,7 +725,7 @@
 			}
 
 			// Iterate thru prototypes
-			for (const [key, defs] of Object.entries(prototypes)) {
+			for (const [key, defs] of Object.entries(protoplus.proto)) {
 				if (skipProtos) break; // Skip contraction if told to
 				if (!globalThis[key]) continue; // Skip if the parent doesn't exist in this environment
 
@@ -756,11 +745,11 @@
 				}
 			}
 
-			// define classes
-			for (const className of Object.keys(classes)) {
-				if (skipClasses) break; // skip contraction if told to
+			// Define classes
+			for (const className of Object.keys(protoplus.classes)) {
+				if (skipClasses) break; // Skip contraction if told to
 
-				// skip deletion if there's a snapshot of it set to `true`,
+				// Skip deletion if there's a snapshot of it set to `true`,
 				// regardless if deletion is forced
 				if (
 					`value.${className}` in snapshots &&
@@ -772,9 +761,11 @@
 			}
 			const endTime = now();
 			if (!options.silent)
-				console.log(`contracted methods in ${endTime - startTime}ms`);
+				console.log(
+					`[proto+] Contracted methods in ${endTime - startTime}ms`
+				);
 		},
-		version: '1.11.2',
+		version: '1.11.3',
 	};
 
 	if (options.preexpand) protoplus.expand(options);
