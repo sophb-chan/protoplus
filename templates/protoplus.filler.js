@@ -751,5 +751,5 @@ const protoplus = {
 		const endTime = now();
 		if (!options.silent) console.log(`[proto+] Contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.11.3",
+	version: "1.12.0",
 };
