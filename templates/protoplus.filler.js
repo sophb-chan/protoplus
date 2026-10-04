@@ -227,6 +227,36 @@ const protoplus = {
 			dedup() {
 				return this.filter((v, i) => this.indexOf(v) === i);
 			},
+			chunks(chunkLength = 1) {
+				chunkLength = Math.trunc(chunkLength);
+				
+				const source = this.valueOf();
+				if (chunkLength > source.length || chunkLength <= 0)
+					throw new RangeError(`Invalid chunk length: ${chunkLength}`);
+				if (chunkLength === source.length)
+					return [source];
+				
+				const chunks = [];
+				for (let i = 0; i < source.length; i += chunkLength) {
+					chunks.push(source.slice(i, i + chunkLength));
+				}
+				return chunks;
+			},
+			windows(windowLength = 1) {
+				windowLength = Math.trunc(windowLength);
+				
+				const source = this.valueOf();
+				if (windowLength > source.length || windowLength <= 0)
+					throw new RangeError(`Invalid window length: ${windowLength}`);
+				if (windowLength === source.length)
+					return [source];
+				
+				const windows = [];
+				for (let i = 0; i <= source.length - windowLength; i++) {
+					windows.push(source.slice(i, i + windowLength));
+				}
+				return windows;
+			},
 		},
 
 		HTMLCollection: {
