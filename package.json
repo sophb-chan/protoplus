@@ -1,12 +1,12 @@
 {
     "name": "protoplus",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "description": "A multi-environment module that expands JavaScript's prototype methods, global helper functions and others.",
     "main": "protoplus.mjs",
     "type": "module",
     "scripts": {
         "test": "echo 'test'",
-		"build": "npm i prettier @prettier/sync && node ./build/constructor.cjs"
+        "build": "npm i prettier @prettier/sync && node ./build/constructor.cjs"
     },
     "keywords": [
         "node",
@@ -22,6 +22,6 @@
     "license": "MIT",
     "devDependencies": {
         "@prettier/sync": "^0.6.1",
-        "prettier": "^3.9.9"
+        "prettier": "^3.9.10"
     }
 }

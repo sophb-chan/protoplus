@@ -35,10 +35,7 @@
 
 			RegExp: {
 				escape: str =>
-					String(str).replace(
-						/([.*+?^${}()|[\]\\])/g,
-						$0 => '\\' + $0
-					),
+					String(str).replace(/[.*+?^${}()|[\]\\]/g, $0 => '\\' + $0),
 			},
 
 			Array: {
@@ -79,6 +76,28 @@
 				},
 				root: (radicand, index = 2) => radicand ** (1 / index),
 				randomMinMax: (min, max) => Math.random() * (max - min) + min,
+				dotProduct(a, b) {
+					if (!Array.isArray(a))
+						throw new TypeError(
+							`The argument "a" must be of the type 'array', not '${typeof a}'.`
+						);
+					if (!Array.isArray(b))
+						throw new TypeError(
+							`The argument "b" must be of the type 'array', not '${typeof b}'.`
+						);
+
+					const len = a.length;
+					if (len !== b.length)
+						throw new Error(
+							`The arguments "a" and "b" must be of the same length, but ${a.length} ≠ ${b.length}.`
+						);
+
+					let sum = 0;
+					for (let i = 0; i < len; i++) {
+						sum += a[i] * b[i];
+					}
+					return sum;
+				},
 			},
 
 			Number: {
@@ -105,26 +124,26 @@
 					);
 				},
 
-				typeOf(thing) {
-					if (typeof thing === 'object')
-						if (thing === null) return 'null';
-						else if (Array.isArray(thing)) return 'array';
+				typeOf(value) {
+					if (typeof value === 'object')
+						if (value === null) return 'null';
+						else if (Array.isArray(value)) return 'array';
 						else return 'object';
-					else if (typeof thing === 'number') {
-						if (Number.isNaN(thing)) return 'nan';
-						else if (!Number.isFinite(thing)) return 'infinity';
-					} else if (typeof thing === 'function') {
-						function isClass(value) {
-							if (typeof value !== 'function') return;
+					else if (typeof value === 'number') {
+						if (Number.isNaN(value)) return 'nan';
+						else if (!Number.isFinite(value)) return 'infinity';
+					} else if (typeof value === 'function') {
+						function isClass(v) {
+							if (typeof v !== 'function') return;
 
 							// do many tests to prove class status
 							const tests = [
 								Function.prototype.toString
-									.call(value)
+									.call(v)
 									.startsWith('class '),
 								(() => {
 									try {
-										Reflect.construct(String, [], value);
+										Reflect.construct(String, [], v);
 										return false;
 									} catch (err) {
 										return /class constructor/i.test(
@@ -133,23 +152,21 @@
 									}
 								})(),
 								(() => {
-									if (!value.prototype) return false;
+									if (!v.prototype) return false;
 									return !Object.prototype.propertyIsEnumerable.call(
-										value,
+										v,
 										'prototype'
 									);
 								})(),
 								(() => {
-									if (!value.prototype) return false;
+									if (!v.prototype) return false;
 									return Object.prototype.hasOwnProperty.call(
-										value.prototype,
+										v.prototype,
 										'constructor'
 									);
 								})(),
 								(() => {
-									return (
-										value[Symbol.toStringTag] === 'Function'
-									);
+									return v[Symbol.toStringTag] === 'Function';
 								})(),
 							];
 
@@ -159,12 +176,21 @@
 						else return 'function';
 					} else return typeof thing;
 				},
-				types: Object.freeze(
-					// made it a string so it's easier to add more
-					'number,string,boolean,function,class,symbol,bigint,undefined,null,array,object,nan,infinity'.split(
-						','
-					)
-				),
+				types: Object.freeze([
+					'array',
+					'bigint',
+					'boolean',
+					'class',
+					'function',
+					'infinity',
+					'undefined',
+					'nan',
+					'null',
+					'number',
+					'object',
+					'string',
+					'symbol',
+				]),
 			},
 
 			Boolean: {
@@ -293,7 +319,7 @@
 			},
 
 			Boolean: {
-				format({ type = 'literal' }) {
+				format(type) {
 					const bool = this.valueOf();
 					const types = Boolean.formatTypes;
 
@@ -309,11 +335,11 @@
 					return RegExp.escape(String(this));
 				},
 				trimLeft(...strings) {
-					if (strings.length < 1) {
+					if (strings.length === 0) {
 						strings = [' ', '\t', '\n', '\r'];
 					}
-					let finalStr = '';
-					let skipping = true;
+					let finalStr = '',
+						skipping = true;
 					for (const char of this) {
 						if (strings.includes(char) && skipping) continue;
 						finalStr += char;
@@ -321,21 +347,8 @@
 					}
 					return finalStr;
 				},
-				trimStart(...strings) {
-					if (strings.length < 1) {
-						strings = [' ', '\t', '\n', '\r'];
-					}
-					let finalStr = '';
-					let skipping = true;
-					for (const char of String(this)) {
-						if (strings.includes(char) && skipping) continue;
-						finalStr += char;
-						skipping = false;
-					}
-					return finalStr;
-				},
 				trimRight(...strings) {
-					if (strings.length < 1) {
+					if (strings.length === 0) {
 						strings = [' ', '\t', '\n', '\r'];
 					}
 					let finalStr = '';
@@ -347,19 +360,8 @@
 					}
 					return finalStr;
 				},
-				trimEnd(...strings) {
-					if (strings.length < 1) {
-						strings = [' ', '\t', '\n', '\r'];
-					}
-					let finalStr = '';
-					let skipping = true;
-					for (const char of Array.from(this).reverse().join('')) {
-						if (strings.includes(char) && skipping) continue;
-						finalStr = char + finalStr;
-						skipping = false;
-					}
-					return finalStr;
-				},
+				trimStart: String.prototype.trimLeft,
+				trimEnd: String.prototype.trimRight,
 				trim(...strings) {
 					return this.trimStart(...strings).trimEnd(...strings);
 				},
@@ -426,6 +428,7 @@
 					return;
 				},
 				toTitleCase(separator = ' ') {
+					// TODO: Comply with standard title-case rules
 					const str = String(this),
 						finalStr = [];
 
@@ -512,9 +515,9 @@
 					minInclusive = true,
 					maxInclusive = true
 				) {
-					const num = this.valueOf();
-					const insideMin = minInclusive ? num >= min : num > min;
-					const insideMax = maxInclusive ? num <= max : num < max;
+					const num = this.valueOf(),
+						insideMin = minInclusive ? num >= min : num > min,
+						insideMax = maxInclusive ? num <= max : num < max;
 					return insideMin && insideMax;
 				},
 			},
@@ -797,7 +800,7 @@
 					`[proto+] Contracted methods in ${endTime - startTime}ms`
 				);
 		},
-		version: '1.12.0',
+		version: '1.13.0',
 	};
 
 	if (options.preexpand) protoplus.expand(options);
