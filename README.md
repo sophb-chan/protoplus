@@ -2,10 +2,10 @@
 Proto+ (a.k.a. protoplus) is a multi-enviroment module that expands JavaScript's prototype definitions, as well as global helper functions and others.
 
 # Table of Contents
-- [How to Import (ES6 module)](https://github.com/sophb-chan/protoplus#how-to-import-es6-module)
-- [How to Import (CommonJS/WebJS module)](https://github.com/sophb-chan/protoplus#how-to-import-commonjswebjs-module)
-- [Quick Start](https://github.com/sophb-chan/protoplus#quick-start)
-- [Playground](https://github.com/sophb-chan/protoplus#playground)
+- [How to Import (ES6 module)](#how-to-import-es6-module)
+- [How to Import (CommonJS/WebJS module)](#how-to-import-commonjswebjs-module)
+- [Quick Start](#quick-start)
+- [Playground](#playground)
 
 # How to Import (ES6 module)
 ## In browsers via HTML or JS:
