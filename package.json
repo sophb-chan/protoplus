@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "echo 'test'",
-        "build": "npm i prettier @prettier/sync && node ./templates/constructor.cjs"
+		"build": "npm i prettier @prettier/sync && node ./build/constructor.cjs"
     },
     "keywords": [
         "node",
