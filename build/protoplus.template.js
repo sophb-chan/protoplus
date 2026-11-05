@@ -5,7 +5,7 @@
 	skipProtos: false,
 	skipClasses: false,
 	skipGlobals: false,
-} = {}) => {
+}) => {
     // innards
     const now = typeof globalThis.performance?.now === "function"
 		? () => Math.trunc(performance.now()) // Use performance.now when available
