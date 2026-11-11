@@ -29,7 +29,8 @@
         "webjs",
         "multienvironment",
         "crossenvironment",
-        "prototype"
+        "prototype",
+        "dx"
     ],
     "repository": {
         "type": "git",
