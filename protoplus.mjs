@@ -20,7 +20,7 @@ const protoplus = {
 				// Durstenfield shuffle script not made by me
 				// Code from https://stackoverflow.com/a/12646864
 				// Credit where it's due!
-				// Thanks @Laurens Holst and @mwsundberg
+				// Thank you, @Laurens Holst and @mwsundberg!
 
 				for (let i = arr.length - 1; i > 0; i--) {
 					const j = Math.floor(Math.random() * (i + 1));
