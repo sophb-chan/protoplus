@@ -14,16 +14,43 @@ permissions:
 
 jobs:
   publish:
+    # Don't publish off a failed or skipped release workflow.
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
 
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
+
       - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
-      - run: npm publish --tag prerelease
+
+      - name: Skip if this version is already on npm
+        id: check-npm
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "protoplus@$VERSION" version >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "protoplus@$VERSION is already published; skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify package contents
+        if: steps.check-npm.outputs.skip == 'false'
+        run: npm pack --dry-run
+
+      # OIDC trusted publishing: no NODE_AUTH_TOKEN needed as long as this
+      # repository + workflow file are configured as a trusted publisher for
+      # the `protoplus` package on npmjs.com. --provenance attaches an
+      # attestation; the default dist-tag (`latest`) is used so the README's
+      # `protoplus@latest` CDN links match what gets published.
+      - name: Publish to npm
+        if: steps.check-npm.outputs.skip == 'false'
+        run: npm publish --provenance

@@ -1,6 +1,14 @@
-const fs = require('fs'),
-	path = require('path'),
-	synchronizedPrettier = require('@prettier/sync');
+#!/usr/bin/env node
+/* ================================================================= *\
+| ===================== TODO: Modularize this! =====================  |
+\* ================================================================= */
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import synchronizedPrettier from '@prettier/sync';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // =============== Get Required Resources =============== //
 // Get templates
@@ -8,6 +16,10 @@ console.log('[Construct] Getting module templates...');
 
 const ES6template = fs.readFileSync(
 	path.join(__dirname, 'protoplus.template.mjs'),
+	'utf8'
+);
+const CJStemplate = fs.readFileSync(
+	path.join(__dirname, 'protoplus.template.cjs'),
 	'utf8'
 );
 const webTemplate = fs.readFileSync(
@@ -27,8 +39,9 @@ const templateFiller = fs.readFileSync(
 console.log('[Construct] Constructing modules...');
 const protoplusCommentRegex = /\/\/[\t ]*protoplus goes here(?:[\t ]*\/\/)?|\/\*\s*protoplus goes here\s*\*\//m;
 
-const ES6constructed = ES6template.replace(protoplusCommentRegex, templateFiller);
-const webConstructed = webTemplate.replace(protoplusCommentRegex, templateFiller);
+const ES6constructed = ES6template.replace(protoplusCommentRegex, templateFiller),
+	CJSconstructed = CJStemplate.replace(protoplusCommentRegex, templateFiller),
+	webConstructed = webTemplate.replace(protoplusCommentRegex, templateFiller);
 
 // =============== Prettify =============== //
 // Get Prettier rules
@@ -46,11 +59,19 @@ const ES6prettified = synchronizedPrettier.format(ES6constructed, {
 fs.writeFileSync(path.join(__dirname, '../protoplus.mjs'), ES6prettified);
 
 // Prettify CommonJS module
+console.log('[Prettify] Prettifying CommonJS module...');
+const CJSprettified = synchronizedPrettier.format(CJSconstructed, {
+	parser: 'babel',
+	...prettierRules,
+});
+fs.writeFileSync(path.join(__dirname, '../protoplus.cjs'), CJSprettified);
+
+// Prettify Web JS module
 const webPrettified = synchronizedPrettier.format(webConstructed, {
 	parser: 'babel',
 	...prettierRules,
 });
-console.log('[Prettify] Prettifying CommonJS module...');
+console.log('[Prettify] Prettifying Web JS module...');
 fs.writeFileSync(path.join(__dirname, '../protoplus.js'), webPrettified);
 
 // =============== Update Package Info =============== //
@@ -87,6 +108,7 @@ console.log('Done!');
 const finalFiles = {
 	'protoplus.js': webPrettified,
 	'protoplus.mjs': ES6prettified,
+	'protoplus.cjs': CJSprettified,
 	'package.json': packageJSON,
 	'package-lock.json': packageLockJSON,
 };

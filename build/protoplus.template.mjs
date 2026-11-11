@@ -12,8 +12,5 @@ const options = {
 };
 
 export default protoplus;
-export {
-	protoplus
-};
 
-console.log(`proto+ v${protoplus.version} loaded!`);
+if (!options.silent) console.log(`proto+ v${protoplus.version} loaded!`);

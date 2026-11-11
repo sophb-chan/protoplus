@@ -1,12 +1,25 @@
 {
     "name": "protoplus",
-    "version": "1.13.0",
+    "version": "1.14.0",
     "description": "A multi-environment module that expands JavaScript's prototype methods, global helper functions and others.",
-    "main": "protoplus.mjs",
+    "main": "protoplus.cjs",
+    "module": "protoplus.mjs",
+    "exports": {
+        ".": {
+            "import": "./protoplus.mjs",
+            "require": "./protoplus.cjs",
+            "default": "./protoplus.mjs"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "protoplus.js",
+        "protoplus.mjs",
+        "protoplus.cjs"
+    ],
     "type": "module",
     "scripts": {
-        "test": "echo 'test'",
-        "build": "npm i prettier @prettier/sync && node ./build/constructor.cjs"
+        "build": "node ./build/constructor.js"
     },
     "keywords": [
         "node",

@@ -15,7 +15,6 @@
     // protoplus goes here
 
 	if (options.preexpand) protoplus.expand(options);
-
     globalThis.protoplus = protoplus;
 
     if (!options.silent) console.log(`proto+ v${protoplus.version} loaded!`);

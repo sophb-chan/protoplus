@@ -1,21 +1,5 @@
 const protoplus = {
 	static: {
-		JSON: {
-			iterate(obj, callback) {
-				if (!JSON.isJSON(obj))
-					throw new TypeError(
-						'Argument "obj" must be a plain object.',
-					);
-				if (typeof callback !== "function")
-					throw new TypeError(
-						'Argument "callback" must be of type "function".',
-					);
-				for (let i = 0; i < Object.keys(obj).length; i++) {
-					callback(Object.keys(obj)[i], Object.values(obj)[i], i);
-				}
-			},
-		},
-
 		RegExp: {
 			escape: (str) =>
 				String(str).replace(/[.*+?^${}()|[\]\\]/g, ($0) => "\\" + $0),
@@ -23,7 +7,8 @@ const protoplus = {
 
 		Array: {
 			shuffle(arr) {
-				if (!Array.isArray(arr)) return;
+				if (!Array.isArray(arr))
+					throw new TypeError("Input array must be of the type 'array'");
 				// Durstenfield shuffle script not made by me
 				// Code from https://stackoverflow.com/a/12646864
 				// Credit where it's due!
@@ -51,8 +36,8 @@ const protoplus = {
 			clamp: (num, min, max) => Math.max(min, Math.min(max, num)),
 			TAU: 2 * Math.PI,
 			angle: {
-				clampDeg: (deg) => deg % 360,
-				clampRad: (rad) => rad % Math.TAU,
+				normalizeDeg: (deg) => ((deg % 360) + 360) % 360,
+				normalizeRad: (rad) => ((rad % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI),
 				radToDeg: (rad) => (rad * 180) / Math.PI,
 				degToRad: (deg) => (deg * Math.PI) / 180,
 			},
@@ -95,61 +80,35 @@ const protoplus = {
 				return (
 					input !== null &&
 					typeof input === "object" &&
-					!Array.isArray(input)
+					!Array.isArray(input) &&
+					(
+						Object.getPrototypeOf(input) === Object.prototype
+						||
+						Object.getPrototypeOf(input) === null
+					)
 				);
 			},
 
 			typeOf(value) {
-				if (typeof value === "object")
+				if (typeof value === "object") {
 					if (value === null) return "null";
 					else if (Array.isArray(value)) return "array";
 					else return "object";
-				else if (typeof value === "number") {
+				} else if (typeof value === "number") {
 					if (Number.isNaN(value)) return "nan";
 					else if (!Number.isFinite(value)) return "infinity";
+					else return "number";
 				} else if (typeof value === "function") {
 					function isClass(v) {
-						if (typeof v !== "function") return;
-
-						// do many tests to prove class status
-						const tests = [
-							Function.prototype.toString
-								.call(v)
-								.startsWith("class "),
-							(() => {
-								try {
-									Reflect.construct(String, [], v);
-									return false;
-								} catch (err) {
-									return /class constructor/i.test(
-										err?.message ?? err,
-									);
-								}
-							})(),
-							(() => {
-								if (!v.prototype) return false;
-								return !Object.prototype.propertyIsEnumerable.call(
-									v,
-									"prototype",
-								);
-							})(),
-							(() => {
-								if (!v.prototype) return false;
-								return Object.prototype.hasOwnProperty.call(
-									v.prototype,
-									"constructor",
-								);
-							})(),
-							(() => {
-								return v[Symbol.toStringTag] === "Function";
-							})(),
-						];
-
-						return tests.some(Boolean);
+						if (typeof v !== "function") return false;
+						const src = Function.prototype.toString.call(v).trimStart();
+						// Native/runtime class constructors serialize as "class ...".
+						// Built-ins like Object/Array serialize as "function ... [native code]".
+						return /^class[\s{]/.test(src);
 					}
-					if (isClass(thing)) return "class";
+					if (isClass(value)) return "class";
 					else return "function";
-				} else return typeof thing;
+				} else return typeof value;
 			},
 			types: Object.freeze([
 				"array",
@@ -225,25 +184,26 @@ const protoplus = {
 				return this;
 			},
 			stride(start = 0, end, step = 1) {
+				const array = this.valueOf();
 				end ??= array.length;
+
 				if (start < 0)
 					throw new RangeError(
 						"Start index must be greater than or equal to zero.",
 					);
-				if (end >= array.length)
+				if (end > array.length)
 					throw new RangeError(
-						"Start index must be lesser than the target array's length.",
+						"Start index must be lesser than or equal to the target array's length.",
 					);
-				if (Number.isInteger(step))
+				if (!Number.isInteger(step))
 					throw new RangeError("Step size must be an integer");
 				if (step < 1)
 					throw new RangeError(
 						"Step size must be greater than or equal to 1.",
 					);
 
-				const array = this.valueOf();
 				const stridedArray = [];
-				for (let i = start; i <= end; i += step) {
+				for (let i = start; i < end; i += step) {
 					stridedArray.push(array[i]);
 				}
 				return stridedArray;
@@ -258,7 +218,7 @@ const protoplus = {
 				if (chunkLength > source.length || chunkLength <= 0)
 					throw new RangeError(`Invalid chunk length: ${chunkLength}`);
 				if (chunkLength === source.length)
-					return [source];
+					return [source.slice()];
 
 				const chunks = [];
 				for (let i = 0; i < source.length; i += chunkLength) {
@@ -273,7 +233,7 @@ const protoplus = {
 				if (windowLength > source.length || windowLength <= 0)
 					throw new RangeError(`Invalid window length: ${windowLength}`);
 				if (windowLength === source.length)
-					return [source];
+					return [source.slice()];
 
 				const windows = [];
 				for (let i = 0; i <= source.length - windowLength; i++) {
@@ -330,8 +290,12 @@ const protoplus = {
 				}
 				return finalStr;
 			},
-			trimStart: String.prototype.trimLeft,
-			trimEnd: String.prototype.trimRight,
+			trimStart(...strings) {
+				return this.trimLeft(...strings);
+			},
+			trimEnd(...strings) {
+				return this.trimRight(...strings);
+			},
 			trim(...strings) {
 				return this.trimStart(...strings).trimEnd(...strings);
 			},
@@ -358,7 +322,7 @@ const protoplus = {
 			},
 			getLineEnding() {
 				if (/\r\n/.test(this.valueOf())) return "\r\n";
-				else if (/[^\r]\n/.test(this.valueOf)) return "\n";
+				else if (/[^\r]\n/.test(this.valueOf())) return "\n";
 				else return undefined; // unknown
 			},
 			lines() {
@@ -378,16 +342,10 @@ const protoplus = {
 					"?!": "⁉",
 					// "fi": "ﬁ", // not punctuation but maybe someday
 				};
-				return Object.keys(puncts).reduce(
-					(finalStr, punct) =>
-						finalStr.replace(
-							new RegExp(
-								`(${punct.map(RegExp.escape).join("|")})`,
-								"g",
-							),
-							(punct) => puncts[punct],
-						),
-					this.valueOf(),
+				return this.valueOf()
+					.replaceAll(
+						new RegExp(`(?:${Object.keys(puncts).map(RegExp.escape).join('|')})`, 'g'),
+						(punct) => puncts[punct],
 				);
 			},
 			forEach(callback, separator = "") {
@@ -403,6 +361,7 @@ const protoplus = {
 					finalStr = [];
 
 				str.split(separator).forEach((arg) => {
+					if (arg.length === 0) return;
 					finalStr.push(arg[0].toUpperCase() + arg.substring(1));
 				});
 
@@ -418,12 +377,13 @@ const protoplus = {
 				const reversed = this.reverse();
 				for (let i = 0; i < this.length - 1; i++) {
 					if (reversed[i] !== char) return i;
-
-					iterations++;
 				}
 				return this.length;
 			},
 			amountOf(substring) {
+				if (substring.length === 0)
+					throw new Error('Target substring must not be empty.');
+
 				let matches = 0;
 				for (let i = 0; i < this.length; i++) {
 					const searchStr = this.substring(i, i + substring.length);
@@ -472,7 +432,7 @@ const protoplus = {
 				return Math.round(this.valueOf());
 			},
 			clamp(min, max) {
-				return Math.max(min, Math.min(max, this));
+				return Math.max(min, Math.min(max, this.valueOf()));
 			},
 			inRange(
 				min,
@@ -487,137 +447,13 @@ const protoplus = {
 			},
 		},
 	},
-	classes: {
-		AdvDate: class {
-			constructor({
-				timestampFn = Date.now,
-				is24hour = null,
-				am = "AM",
-				pm = "PM",
-			} = {}) {
-				this.weekNames = [
-					"Sunday",
-					"Monday",
-					"Tuesday",
-					"Wednesday",
-					"Thursday",
-					"Friday",
-					"Saturday",
-				];
-
-				const getHour = () => {
-					if (typeof is24hour === 'boolean')
-						return parseInt(
-							new Date(getTimestamp()).toLocaleTimeString(
-								"en-US",
-								{
-									hour12: !is24hour,
-									hour: "2-digit",
-								},
-							),
-						);
-					else
-						return parseInt(
-							new Date(getTimestamp()).toLocaleTimeString(
-								undefined,
-								{
-									hour: "2-digit",
-								},
-							),
-						);
-				};
-				this.times = {
-					timestamp: timestampFn,
-					weekDay: () => new Date(getTimestamp()).getDay() + 1,
-					day: () => new Date(getTimestamp()).getDate(),
-					dayOfWeek: () => new Date(getTimestamp()).getDay(),
-					daysInMonth: () =>
-						new Date(
-							new Date(getTimestamp()).getFullYear(),
-							new Date(getTimestamp()).getMonth() + 1,
-							0,
-						).getDate(),
-					weekName: () => this.weekNames[new Date(getTimestamp()).getDay()],
-					month: () => new Date(getTimestamp()).getMonth() + 1,
-					year: () => new Date(getTimestamp()).getFullYear(),
-					hours: getHour,
-					minutes: () => new Date(getTimestamp()).getMinutes(),
-					seconds: () => new Date(getTimestamp()).getSeconds(),
-					milliseconds: () => new Date(getTimestamp()).getMilliseconds(),
-					meridiem() {
-						if (isDefined(is24hour) && !is24hour) {
-							return new Date()
-								.toLocaleTimeString("en-US", {
-									hour: "numeric",
-									minute: "numeric",
-									hour12: true,
-								})
-								.split(" ")[1] === "AM"
-								? am
-								: pm;
-						} else return "";
-					},
-				};
-
-				Object.keys(this.times).forEach(k => (this[k] = this.times[k]));
-			}
-
-			getDateString({
-				trimWeek = false,
-				showWeek = true,
-				monthFirst = true,
-				timeFirst = false,
-				showMs = false,
-				dateSeparator = "/",
-				timeSeparator = ":",
-				msSeparator = ".",
-				dateOnly = false,
-				timeOnly = false,
-			} = {}) {
-				const week = showWeek
-					? `${trimWeek
-						? this.times.weekName().substring(0, 3)
-						: this.times.weekName()
-					} `
-					: "";
-				const time =
-					[
-						this.times.hours().toString().padStart(2, "0"),
-						this.times.minutes().toString().padStart(2, "0"),
-						this.times.seconds().toString().padStart(2, "0"),
-					].join(timeSeparator) +
-					(showMs
-						? `${msSeparator}${this.times.milliseconds().toString().padStart(3, "0")}`
-						: "");
-
-				const date = [
-					(monthFirst ? this.times.month() : this.times.day())
-						.toString()
-						.padStart(2, "0"),
-					(monthFirst ? this.times.day() : this.times.month())
-						.toString()
-						.padStart(2, "0"),
-					this.times.year().toString().padStart(4, "0"),
-				].join(dateSeparator);
-
-				if (timeOnly && dateOnly)
-					throw new Error(
-						"You cannot only get the time while also only getting the date. Pick one!",
-					);
-
-				if (timeOnly) return time;
-				if (dateOnly) return date;
-
-				if (timeFirst) return time + " " + week + date;
-				else return week + date + " " + time;
-			}
-		},
-	},
+	classes: {},
 	expand: ({
 		override = true,
 		skipProtos = false,
 		skipGlobals = false,
 		skipClasses = false,
+		silent = globalThis?.options?.silent ?? false,
 	} = {}) => {
 		const startTime = now();
 
@@ -682,7 +518,7 @@ const protoplus = {
 			globalThis[className] = classDef;
 		}
 		const endTime = now();
-		if (!options.silent) console.log(`[proto+] Expanded methods in ${endTime - startTime}ms`);
+		if (!silent) console.log(`[proto+] Expanded methods in ${endTime - startTime}ms`);
 	},
 	contract: ({
 		forceErase = false,
@@ -749,7 +585,7 @@ const protoplus = {
 			delete globalThis[className];
 		}
 		const endTime = now();
-		if (!options.silent) console.log(`[proto+] Contracted methods in ${endTime - startTime}ms`);
+		if (!silent) console.log(`[proto+] Contracted methods in ${endTime - startTime}ms`);
 	},
-	version: "1.13.0",
+	version: "1.14.0",
 };
