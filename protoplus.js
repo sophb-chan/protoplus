@@ -635,7 +635,7 @@
 					`[proto+] Contracted methods in ${endTime - startTime}ms`
 				);
 		},
-		version: '1.14.0',
+		version: '1.14.0-build1',
 	};
 
 	if (options.preexpand) protoplus.expand(options);
