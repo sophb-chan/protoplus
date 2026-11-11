@@ -31,6 +31,12 @@
         "crossenvironment",
         "prototype"
     ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sophb-chan/protoplus.git"
+    },
+    "bugs": "https://github.com/sophb-chan/protoplus/issues",
+    "homepage": "https://github.com/sophb-chan/protoplus#readme",
     "author": "sophb.chan <sophb.chan@proton.me>",
     "license": "MIT",
     "devDependencies": {
