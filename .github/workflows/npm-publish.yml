@@ -1,8 +1,12 @@
-name: Publish to NPM (on GitHub Release)
+name: Publish to NPM (on version bump)
 
 on:
+  # Triggered by the same upstream as "Release to GitHub (on version bump)",
+  # so publishing does NOT depend on the release workflow running or succeeding.
+  # The npm-registry existence check below keeps this a no-op when the version
+  # hasn't been bumped.
   workflow_run:
-    workflows: ["Release to GitHub (on version bump)"]
+    workflows: ["Construct modules"]
     types:
       - completed
     branches:
@@ -14,7 +18,7 @@ permissions:
 
 jobs:
   publish:
-    # Don't publish off a failed or skipped release workflow.
+    # Don't publish off a failed (or skipped) constructor run.
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
