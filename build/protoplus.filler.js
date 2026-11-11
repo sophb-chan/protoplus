@@ -1,14 +1,16 @@
 const protoplus = {
 	static: {
 		RegExp: {
-			escape: (str) =>
-				String(str).replace(/[.*+?^${}()|[\]\\]/g, ($0) => "\\" + $0),
+			escape: str =>
+				String(str).replace(/[.*+?^${}()|[\]\\]/g, $0 => '\\' + $0),
 		},
 
 		Array: {
 			shuffle(arr) {
 				if (!Array.isArray(arr))
-					throw new TypeError("Input array must be of the type 'array'");
+					throw new TypeError(
+						"Input array must be of the type 'array'"
+					);
 				// Durstenfield shuffle script not made by me
 				// Code from https://stackoverflow.com/a/12646864
 				// Credit where it's due!
@@ -36,22 +38,29 @@ const protoplus = {
 			clamp: (num, min, max) => Math.max(min, Math.min(max, num)),
 			TAU: 2 * Math.PI,
 			angle: {
-				normalizeDeg: (deg) => ((deg % 360) + 360) % 360,
-				normalizeRad: (rad) => ((rad % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI),
-				radToDeg: (rad) => (rad * 180) / Math.PI,
-				degToRad: (deg) => (deg * Math.PI) / 180,
+				normalizeDeg: deg => ((deg % 360) + 360) % 360,
+				normalizeRad: rad =>
+					((rad % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI),
+				radToDeg: rad => (rad * 180) / Math.PI,
+				degToRad: deg => (deg * Math.PI) / 180,
 			},
 			root: (radicand, index = 2) => radicand ** (1 / index),
 			randomMinMax: (min, max) => Math.random() * (max - min) + min,
 			dotProduct(a, b) {
 				if (!Array.isArray(a))
-					throw new TypeError(`The argument "a" must be of the type 'array', not '${typeof a}'.`);
+					throw new TypeError(
+						`The argument "a" must be of the type 'array', not '${typeof a}'.`
+					);
 				if (!Array.isArray(b))
-					throw new TypeError(`The argument "b" must be of the type 'array', not '${typeof b}'.`);
+					throw new TypeError(
+						`The argument "b" must be of the type 'array', not '${typeof b}'.`
+					);
 
 				const len = a.length;
 				if (len !== b.length)
-					throw new Error(`The arguments "a" and "b" must be of the same length, but ${a.length} ≠ ${b.length}.`);
+					throw new RangeError(
+						`The arguments "a" and "b" must be of the same length, but ${a.length} ≠ ${b.length}.`
+					);
 
 				let sum = 0;
 				for (let i = 0; i < len; i++) {
@@ -61,79 +70,64 @@ const protoplus = {
 			},
 		},
 
-		Number: {
-			testFloatPrecision() {
-				for (let i = 0; i < 5e2; i++) {
-					const baseNumber = 1;
-					const testNumber = parseFloat(`0.${"9".repeat(i)}`);
-					if (testNumber === baseNumber) {
-						Number.floatPrecision = i;
-						return i;
-					}
-				}
-			},
-			testIntPrecision: () => (Number.intPrecision = Number.MAX_SAFE_INTEGER),
-		},
-
 		Object: {
 			isPlain(input) {
 				return (
 					input !== null &&
-					typeof input === "object" &&
+					typeof input === 'object' &&
 					!Array.isArray(input) &&
-					(
-						Object.getPrototypeOf(input) === Object.prototype
-						||
-						Object.getPrototypeOf(input) === null
-					)
+					(Object.getPrototypeOf(input) === Object.prototype ||
+						Object.getPrototypeOf(input) === null)
 				);
 			},
 
 			typeOf(value) {
-				if (typeof value === "object") {
-					if (value === null) return "null";
-					else if (Array.isArray(value)) return "array";
-					else return "object";
-				} else if (typeof value === "number") {
-					if (Number.isNaN(value)) return "nan";
-					else if (!Number.isFinite(value)) return "infinity";
-					else return "number";
-				} else if (typeof value === "function") {
+				if (typeof value === 'object') {
+					if (value === null) return 'null';
+					else if (Array.isArray(value)) return 'array';
+					else return 'object';
+				} else if (typeof value === 'number') {
+					if (Number.isNaN(value)) return 'nan';
+					else if (!Number.isFinite(value)) return 'infinity';
+					else return 'number';
+				} else if (typeof value === 'function') {
 					function isClass(v) {
-						if (typeof v !== "function") return false;
-						const src = Function.prototype.toString.call(v).trimStart();
+						if (typeof v !== 'function') return false;
+						const src = Function.prototype.toString
+							.call(v)
+							.trimStart();
 						// Native/runtime class constructors serialize as "class ...".
 						// Built-ins like Object/Array serialize as "function ... [native code]".
 						return /^class[\s{]/.test(src);
 					}
-					if (isClass(value)) return "class";
-					else return "function";
+					if (isClass(value)) return 'class';
+					else return 'function';
 				} else return typeof value;
 			},
 			types: Object.freeze([
-				"array",
-				"bigint",
-				"boolean",
-				"class",
-				"function",
-				"infinity",
-				"undefined",
-				"nan",
-				"null",
-				"number",
-				"object",
-				"string",
-				"symbol",
+				'array',
+				'bigint',
+				'boolean',
+				'class',
+				'function',
+				'infinity',
+				'undefined',
+				'nan',
+				'null',
+				'number',
+				'object',
+				'string',
+				'symbol',
 			]),
 		},
 
 		Boolean: {
 			formatTypes: {
-				affirm: ["no", "yes"],
-				binary: ["0", "1"],
-				onoff: ["off", "on"],
-				enable: ["disabled", "enabled"],
-				literal: ["false", "true"],
+				affirm: ['no', 'yes'],
+				binary: ['0', '1'],
+				onoff: ['off', 'on'],
+				enable: ['disabled', 'enabled'],
+				literal: ['false', 'true'],
 			},
 		},
 	},
@@ -151,11 +145,7 @@ const protoplus = {
 				return this[this.length - 1];
 			},
 			shuffle() {
-				const shuffled = Array.shuffle(this);
-				shuffled.forEach((item, i) => {
-					this[i] = item;
-				});
-				return shuffled;
+				return Array.shuffle(this);
 			},
 			toShuffled() {
 				return Array.shuffle([...this]);
@@ -166,22 +156,28 @@ const protoplus = {
 			genericType() {
 				return Array.genericType(this);
 			},
-			advSort(compareFn) {
+			advancedSort(compareFn) {
 				const arrType = this.genericType();
 
 				if (compareFn !== undefined) {
-					if (typeof compareFn === "function") {
+					if (typeof compareFn === 'function') {
 						this.sort(compareFn);
 					} else {
 						throw new TypeError(
-							`The comparison function should not be of type '${typeof compareFn}', only 'function' or 'undefined'`,
+							`advancedSort() requires the comparison function to be a function or undefined, not '${compareFn === null ? 'object' : typeof compareFn}'.`
 						);
 					}
 				} else {
-					if (arrType === "number") this.sort((a, b) => a - b);
+					if (arrType === 'number') this.sort((a, b) => a - b);
 					else this.sort();
 				}
 				return this;
+			},
+			/**
+			 * @deprecated Renamed to `advancedSort()`. Kept as an alias; will be removed in a future major.
+			 */
+			advSort(compareFn) {
+				return this.advancedSort(compareFn);
 			},
 			stride(start = 0, end, step = 1) {
 				const array = this.valueOf();
@@ -189,21 +185,21 @@ const protoplus = {
 
 				if (start < 0)
 					throw new RangeError(
-						"Start index must be greater than or equal to zero.",
+						'Start index must be greater than or equal to zero.'
 					);
 				if (end > array.length)
 					throw new RangeError(
-						"End index must be lesser than or equal to the target array's length.",
+						"End index must be lesser than or equal to the target array's length."
 					);
 				if (end < start)
 					throw new RangeError(
-						"End index must be greater than or equal to start.",
+						'End index must be greater than or equal to start.'
 					);
 				if (!Number.isInteger(step))
-					throw new RangeError("Step size must be an integer");
+					throw new RangeError('Step size must be an integer');
 				if (step < 1)
 					throw new RangeError(
-						"Step size must be greater than or equal to 1.",
+						'Step size must be greater than or equal to 1.'
 					);
 
 				const stridedArray = [];
@@ -220,9 +216,10 @@ const protoplus = {
 
 				const source = this.valueOf();
 				if (chunkLength > source.length || chunkLength <= 0)
-					throw new RangeError(`Invalid chunk length: ${chunkLength}`);
-				if (chunkLength === source.length)
-					return [source.slice()];
+					throw new RangeError(
+						`Invalid chunk length: ${chunkLength}`
+					);
+				if (chunkLength === source.length) return [source.slice()];
 
 				const chunks = [];
 				for (let i = 0; i < source.length; i += chunkLength) {
@@ -235,9 +232,10 @@ const protoplus = {
 
 				const source = this.valueOf();
 				if (windowLength > source.length || windowLength <= 0)
-					throw new RangeError(`Invalid window length: ${windowLength}`);
-				if (windowLength === source.length)
-					return [source.slice()];
+					throw new RangeError(
+						`Invalid window length: ${windowLength}`
+					);
+				if (windowLength === source.length) return [source.slice()];
 
 				const windows = [];
 				for (let i = 0; i <= source.length - windowLength; i++) {
@@ -258,7 +256,7 @@ const protoplus = {
 				const bool = this.valueOf();
 				const types = Boolean.formatTypes;
 
-				const pair = types[type] ?? ["false", "true"];
+				const pair = types[type] ?? ['false', 'true'];
 				return pair[+bool]; // transform bool to num by adding to 0
 			},
 		},
@@ -271,9 +269,10 @@ const protoplus = {
 			},
 			trimLeft(...strings) {
 				if (strings.length === 0) {
-					strings = [" ", "\t", "\n", "\r"];
+					strings = [' ', '\t', '\n', '\r'];
 				}
-				let finalStr = "", skipping = true;
+				let finalStr = '',
+					skipping = true;
 				for (const char of this) {
 					if (strings.includes(char) && skipping) continue;
 					finalStr += char;
@@ -283,11 +282,11 @@ const protoplus = {
 			},
 			trimRight(...strings) {
 				if (strings.length === 0) {
-					strings = [" ", "\t", "\n", "\r"];
+					strings = [' ', '\t', '\n', '\r'];
 				}
-				let finalStr = "";
-				let skipping = true;
-				for (const char of Array.from(this).reverse().join("")) {
+				let finalStr = '',
+					skipping = true;
+				for (const char of Array.from(this).reverse().join('')) {
 					if (strings.includes(char) && skipping) continue;
 					finalStr = char + finalStr;
 					skipping = false;
@@ -304,67 +303,68 @@ const protoplus = {
 				return this.trimStart(...strings).trimEnd(...strings);
 			},
 			reverse() {
-				return this.split("").reverse().join("");
+				return this.split('').reverse().join('');
 			},
 			erase(...strings) {
 				return strings.reduce(
-					(finalStr, str) => finalStr.replace(str, ""),
-					this.valueOf(),
+					(finalStr, str) => finalStr.replace(str, ''),
+					this.valueOf()
 				);
 			},
 			eraseAll(...strings) {
 				return strings.reduce(
-					(finalStr, str) => finalStr.replaceAll(str, ""),
-					this.valueOf(),
+					(finalStr, str) => finalStr.replaceAll(str, ''),
+					this.valueOf()
 				);
 			},
 			chars() {
-				return this.split("");
+				return this.split('');
 			},
 			words() {
-				return this.split(" ");
+				return this.split(' ');
 			},
 			getLineEnding() {
 				const value = this.valueOf();
-				if (value.includes("\r\n")) return "\r\n";
-				else if (value.includes("\n")) return "\n";
+				if (value.includes('\r\n')) return '\r\n';
+				else if (value.includes('\n')) return '\n';
 				else return undefined; // unknown
 			},
 			lines() {
-				return this.split(/\r?\n/); // no lines
+				return this.split(/\r?\n/);
 			},
 			compactPunct() {
 				const puncts = {
-					"...": "…",
-					"---": "—",
-					"--": "–",
-					"-": "‑",
-					"<<": "«",
-					">>": "»",
-					"!!": "‼",
-					"!?": "⁉",
-					"?!": "⁉",
-					// "fi": "ﬁ", // not punctuation but maybe someday
+					'...': '…',
+					'---': '—',
+					'--': '–',
+					'-': '‑',
+					'<<': '«',
+					'>>': '»',
+					'!!': '‼',
+					'!?': '⁉',
+					'?!': '⁉',
 				};
-				return this.valueOf()
-					.replaceAll(
-						new RegExp(`(?:${Object.keys(puncts).map(RegExp.escape).join('|')})`, 'g'),
-						(punct) => puncts[punct],
+				return this.valueOf().replaceAll(
+					new RegExp(
+						`(?:${Object.keys(puncts).map(RegExp.escape).join('|')})`,
+						'g'
+					),
+					punct => puncts[punct]
 				);
 			},
-			forEach(callback, separator = "") {
+			forEach(callback, separator = '') {
 				const separated = this.split(separator);
 				for (let i = 0; i < separated.length; i++) {
 					callback(separated[i], i, this.valueOf());
 				}
-				return;
 			},
-			toTitleCase(separator = " ") {
-				// TODO: Comply with standard title-case rules
+			toTitleCase(separator = ' ') {
+				// Not typographically complete title-case rules (e.g. lowercasing "the"/"of");
+				// it uppercases the first letter of each word, nothing more.
 				const str = String(this),
 					finalStr = [];
 
-				str.split(separator).forEach((arg) => {
+				str.split(separator).forEach(arg => {
 					if (arg.length === 0) return;
 					finalStr.push(arg[0].toUpperCase() + arg.substring(1));
 				});
@@ -396,7 +396,7 @@ const protoplus = {
 				return matches;
 			},
 			cleanup() {
-				return this.valueOf().normalize("NFKD").replace(/\p{M}/gu, "");
+				return this.valueOf().normalize('NFKD').replace(/\p{M}/gu, '');
 			},
 			escapeHTML() {
 				const entities = {
@@ -438,12 +438,7 @@ const protoplus = {
 			clamp(min, max) {
 				return Math.max(min, Math.min(max, this.valueOf()));
 			},
-			inRange(
-				min,
-				max = min,
-				minInclusive = true,
-				maxInclusive = true,
-			) {
+			inRange(min, max = min, minInclusive = true, maxInclusive = true) {
 				const num = this.valueOf(),
 					insideMin = minInclusive ? num >= min : num > min,
 					insideMax = maxInclusive ? num <= max : num < max;
@@ -451,12 +446,10 @@ const protoplus = {
 			},
 		},
 	},
-	classes: {},
 	expand: ({
 		override = true,
 		skipProtos = false,
 		skipGlobals = false,
-		skipClasses = false,
 		silent = false,
 	} = {}) => {
 		const startTime = now();
@@ -509,26 +502,16 @@ const protoplus = {
 			}
 		}
 
-		// Define classes
-		for (const [className, classDef] of Object.entries(protoplus.classes)) {
-			if (skipClasses) break; // Skip expansion if told to
-
-			if (className in globalThis) {
-				// Add to snapshots and skip definition if it already exists,
-				// regardless of override
-				snapshots[`value.${className}`] = true; // Use true for existence
-				continue;
-			}
-			globalThis[className] = classDef;
-		}
 		const endTime = now();
-		if (!silent) console.log(`[proto+] Expanded methods in ${endTime - startTime}ms`);
+		if (!silent)
+			console.log(
+				`[proto+] Expanded methods in ${endTime - startTime}ms`
+			);
 	},
 	contract: ({
 		forceErase = false,
 		skipProtos = false,
 		skipGlobals = false,
-		skipClasses = false,
 		silent = false,
 	} = {}) => {
 		const startTime = now();
@@ -567,7 +550,10 @@ const protoplus = {
 			for (const name of Object.keys(defs)) {
 				// Don't clobber something the user installed over proto+'s
 				// definition after expanding (unless erasing is forced).
-				if (!forceErase && globalThis[key].prototype[name] !== defs[name])
+				if (
+					!forceErase &&
+					globalThis[key].prototype[name] !== defs[name]
+				)
 					continue;
 				const snapshot = snapshots[`prototype.${key}.${name}`];
 				// Delete definition if erasing is forced or there is no snapshot
@@ -584,22 +570,11 @@ const protoplus = {
 			}
 		}
 
-		// Define classes
-		for (const className of Object.keys(protoplus.classes)) {
-			if (skipClasses) break; // Skip contraction if told to
-
-			// Skip deletion if there's a snapshot of it set to `true`,
-			// regardless if deletion is forced
-			if (
-				`value.${className}` in snapshots &&
-				snapshots[`value.${className}`] === true
-			)
-				continue;
-
-			delete globalThis[className];
-		}
 		const endTime = now();
-		if (!silent) console.log(`[proto+] Contracted methods in ${endTime - startTime}ms`);
+		if (!silent)
+			console.log(
+				`[proto+] Contracted methods in ${endTime - startTime}ms`
+			);
 	},
-	version: "1.14.1",
+	version: '2.0.0',
 };

@@ -64,7 +64,7 @@ const protoplus = {
 
 				const len = a.length;
 				if (len !== b.length)
-					throw new Error(
+					throw new RangeError(
 						`The arguments "a" and "b" must be of the same length, but ${a.length} ≠ ${b.length}.`
 					);
 
@@ -74,21 +74,6 @@ const protoplus = {
 				}
 				return sum;
 			},
-		},
-
-		Number: {
-			testFloatPrecision() {
-				for (let i = 0; i < 5e2; i++) {
-					const baseNumber = 1;
-					const testNumber = parseFloat(`0.${'9'.repeat(i)}`);
-					if (testNumber === baseNumber) {
-						Number.floatPrecision = i;
-						return i;
-					}
-				}
-			},
-			testIntPrecision: () =>
-				(Number.intPrecision = Number.MAX_SAFE_INTEGER),
 		},
 
 		Object: {
@@ -166,11 +151,7 @@ const protoplus = {
 				return this[this.length - 1];
 			},
 			shuffle() {
-				const shuffled = Array.shuffle(this);
-				shuffled.forEach((item, i) => {
-					this[i] = item;
-				});
-				return shuffled;
+				return Array.shuffle(this);
 			},
 			toShuffled() {
 				return Array.shuffle([...this]);
@@ -181,7 +162,7 @@ const protoplus = {
 			genericType() {
 				return Array.genericType(this);
 			},
-			advSort(compareFn) {
+			advancedSort(compareFn) {
 				const arrType = this.genericType();
 
 				if (compareFn !== undefined) {
@@ -189,7 +170,7 @@ const protoplus = {
 						this.sort(compareFn);
 					} else {
 						throw new TypeError(
-							`The comparison function should not be of type '${typeof compareFn}', only 'function' or 'undefined'`
+							`advancedSort() requires the comparison function to be a function or undefined, not '${compareFn === null ? 'object' : typeof compareFn}'.`
 						);
 					}
 				} else {
@@ -197,6 +178,12 @@ const protoplus = {
 					else this.sort();
 				}
 				return this;
+			},
+			/**
+			 * @deprecated Renamed to `advancedSort()`. Kept as an alias; will be removed in a future major.
+			 */
+			advSort(compareFn) {
+				return this.advancedSort(compareFn);
 			},
 			stride(start = 0, end, step = 1) {
 				const array = this.valueOf();
@@ -303,8 +290,8 @@ const protoplus = {
 				if (strings.length === 0) {
 					strings = [' ', '\t', '\n', '\r'];
 				}
-				let finalStr = '';
-				let skipping = true;
+				let finalStr = '',
+					skipping = true;
 				for (const char of Array.from(this).reverse().join('')) {
 					if (strings.includes(char) && skipping) continue;
 					finalStr = char + finalStr;
@@ -349,7 +336,7 @@ const protoplus = {
 				else return undefined; // unknown
 			},
 			lines() {
-				return this.split(/\r?\n/); // no lines
+				return this.split(/\r?\n/);
 			},
 			compactPunct() {
 				const puncts = {
@@ -362,7 +349,6 @@ const protoplus = {
 					'!!': '‼',
 					'!?': '⁉',
 					'?!': '⁉',
-					// "fi": "ﬁ", // not punctuation but maybe someday
 				};
 				return this.valueOf().replaceAll(
 					new RegExp(
@@ -377,10 +363,10 @@ const protoplus = {
 				for (let i = 0; i < separated.length; i++) {
 					callback(separated[i], i, this.valueOf());
 				}
-				return;
 			},
 			toTitleCase(separator = ' ') {
-				// TODO: Comply with standard title-case rules
+				// Not typographically complete title-case rules (e.g. lowercasing "the"/"of");
+				// it uppercases the first letter of each word, nothing more.
 				const str = String(this),
 					finalStr = [];
 
@@ -466,12 +452,10 @@ const protoplus = {
 			},
 		},
 	},
-	classes: {},
 	expand: ({
 		override = true,
 		skipProtos = false,
 		skipGlobals = false,
-		skipClasses = false,
 		silent = false,
 	} = {}) => {
 		const startTime = now();
@@ -524,18 +508,6 @@ const protoplus = {
 			}
 		}
 
-		// Define classes
-		for (const [className, classDef] of Object.entries(protoplus.classes)) {
-			if (skipClasses) break; // Skip expansion if told to
-
-			if (className in globalThis) {
-				// Add to snapshots and skip definition if it already exists,
-				// regardless of override
-				snapshots[`value.${className}`] = true; // Use true for existence
-				continue;
-			}
-			globalThis[className] = classDef;
-		}
 		const endTime = now();
 		if (!silent)
 			console.log(
@@ -546,7 +518,6 @@ const protoplus = {
 		forceErase = false,
 		skipProtos = false,
 		skipGlobals = false,
-		skipClasses = false,
 		silent = false,
 	} = {}) => {
 		const startTime = now();
@@ -605,32 +576,17 @@ const protoplus = {
 			}
 		}
 
-		// Define classes
-		for (const className of Object.keys(protoplus.classes)) {
-			if (skipClasses) break; // Skip contraction if told to
-
-			// Skip deletion if there's a snapshot of it set to `true`,
-			// regardless if deletion is forced
-			if (
-				`value.${className}` in snapshots &&
-				snapshots[`value.${className}`] === true
-			)
-				continue;
-
-			delete globalThis[className];
-		}
 		const endTime = now();
 		if (!silent)
 			console.log(
 				`[proto+] Contracted methods in ${endTime - startTime}ms`
 			);
 	},
-	version: '1.14.1',
+	version: '2.0.0',
 };
 
 const options = {
 	silent: true,
-	preexpand: false,
 };
 
 export default protoplus;

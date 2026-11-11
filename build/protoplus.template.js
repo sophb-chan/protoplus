@@ -3,7 +3,6 @@
 	silent: false,
 	override: true,
 	skipProtos: false,
-	skipClasses: false,
 	skipGlobals: false,
 }) => {
     // innards

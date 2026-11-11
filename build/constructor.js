@@ -1,122 +1,76 @@
 #!/usr/bin/env node
-/* ================================================================= *\
-| ===================== TODO: Modularize this! =====================  |
-\* ================================================================= */
-
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import synchronizedPrettier from '@prettier/sync';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { readResources, ROOT_DIR } from './lib/resources.js';
+import { fillTemplate, matchFillerVersion } from './lib/construct.js';
+import { prettify } from './lib/prettify.js';
+import { syncPackageVersion } from './lib/package-info.js';
+import { shouldSendOff, printSendOff } from './lib/send-off.js';
 
-// =============== Get Required Resources =============== //
-// Get templates
-console.log('[Construct] Getting module templates...');
+const main = () => {
+	// =============== Get Required Resources =============== //
+	console.log('[Construct] Getting module templates...');
+	console.log('[Construct] Getting module filler...');
+	const {
+		esTemplate,
+		cjsTemplate,
+		webTemplate,
+		filler,
+		prettierRules,
+		packageJSON,
+		packageLockJSON,
+	} = readResources();
 
-const ES6template = fs.readFileSync(
-	path.join(__dirname, 'protoplus.template.mjs'),
-	'utf8'
-);
-const CJStemplate = fs.readFileSync(
-	path.join(__dirname, 'protoplus.template.cjs'),
-	'utf8'
-);
-const webTemplate = fs.readFileSync(
-	path.join(__dirname, 'protoplus.template.js'),
-	'utf8'
-);
+	// =============== Construct =============== //
+	console.log('[Construct] Constructing modules...');
+	const constructed = {
+		mjs: fillTemplate(esTemplate, filler),
+		cjs: fillTemplate(cjsTemplate, filler),
+		web: fillTemplate(webTemplate, filler),
+	};
 
-// Get filler
-console.log('[Construct] Getting module filler...');
+	// =============== Prettify =============== //
+	console.log('[Prettify] Getting Prettier rules...');
+	console.log('[Prettify] Prettifying ES6 module...');
+	const ES6prettified = prettify(constructed.mjs, prettierRules);
+	fs.writeFileSync(path.join(ROOT_DIR, 'protoplus.mjs'), ES6prettified);
 
-const templateFiller = fs.readFileSync(
-	path.join(__dirname, 'protoplus.filler.js'),
-	'utf8'
-);
+	console.log('[Prettify] Prettifying CommonJS module...');
+	const CJSprettified = prettify(constructed.cjs, prettierRules);
+	fs.writeFileSync(path.join(ROOT_DIR, 'protoplus.cjs'), CJSprettified);
 
-// =============== Construct =============== //
-console.log('[Construct] Constructing modules...');
-const protoplusCommentRegex = /\/\/[\t ]*protoplus goes here(?:[\t ]*\/\/)?|\/\*\s*protoplus goes here\s*\*\//m;
+	console.log('[Prettify] Prettifying Web JS module...');
+	const webPrettified = prettify(constructed.web, prettierRules);
+	fs.writeFileSync(path.join(ROOT_DIR, 'protoplus.js'), webPrettified);
 
-const ES6constructed = ES6template.replace(protoplusCommentRegex, templateFiller),
-	CJSconstructed = CJStemplate.replace(protoplusCommentRegex, templateFiller),
-	webConstructed = webTemplate.replace(protoplusCommentRegex, templateFiller);
+	// =============== Update Package Info =============== //
+	const version = matchFillerVersion(filler);
+	console.log('[Package] Updating package.json...');
+	console.log('[Package] Updating package-lock.json...');
+	syncPackageVersion(version, packageJSON, packageLockJSON);
 
-// =============== Prettify =============== //
-// Get Prettier rules
-console.log('[Prettify] Getting Prettier rules...');
-const prettierRules = JSON.parse(
-	fs.readFileSync(path.join(__dirname, '../.prettierrc.json'), 'utf8')
-);
+	// =============== Update Playground =============== //
+	console.log('[Playground] Copying protoplus to playground page...');
+	fs.writeFileSync(path.join(ROOT_DIR, 'playground', 'protoplus.js'), webPrettified);
 
-// Prettify ES6 module
-console.log('[Prettify] Prettifying ES6 module...');
-const ES6prettified = synchronizedPrettier.format(ES6constructed, {
-	parser: 'babel',
-	...prettierRules,
-});
-fs.writeFileSync(path.join(__dirname, '../protoplus.mjs'), ES6prettified);
-
-// Prettify CommonJS module
-console.log('[Prettify] Prettifying CommonJS module...');
-const CJSprettified = synchronizedPrettier.format(CJSconstructed, {
-	parser: 'babel',
-	...prettierRules,
-});
-fs.writeFileSync(path.join(__dirname, '../protoplus.cjs'), CJSprettified);
-
-// Prettify Web JS module
-const webPrettified = synchronizedPrettier.format(webConstructed, {
-	parser: 'babel',
-	...prettierRules,
-});
-console.log('[Prettify] Prettifying Web JS module...');
-fs.writeFileSync(path.join(__dirname, '../protoplus.js'), webPrettified);
-
-// =============== Update Package Info =============== //
-// Update version number in package.json
-console.log('[Package] Updating package.json...');
-const packageJSON = JSON.parse(
-	fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
-);
-packageJSON.version = templateFiller.match(/(['"]?)version\1: "([^"]+)"/)[2];
-fs.writeFileSync(
-	path.join(__dirname, '../package.json'),
-	JSON.stringify(packageJSON, null, 4)
-);
-// Update version number in package-lock.json
-console.log('[Package] Updating package-lock.json...');
-const packageLockJSON = JSON.parse(
-	fs.readFileSync(path.join(__dirname, '../package-lock.json'), 'utf8')
-);
-packageLockJSON.version = templateFiller.match(/(['"]?)version\1: "([^"]+)"/)[2];
-packageLockJSON.packages[''].version = templateFiller.match(/(['"]?)version\1: "([^"]+)"/)[2];
-fs.writeFileSync(
-	path.join(__dirname, '../package-lock.json'),
-	JSON.stringify(packageLockJSON, null, 4)
-);
-
-// =============== Update Playground =============== //
-// Copy proto+ to playground page
-console.log('[Playground] Copying protoplus to playground page...');
-fs.writeFileSync(path.join(__dirname, '../playground/protoplus.js'), webPrettified);
-
-// =============== Final Send-off =============== //
-console.log('Done!');
-// Log final file outputs to console for your viewing pleasure!
-const finalFiles = {
-	'protoplus.js': webPrettified,
-	'protoplus.mjs': ES6prettified,
-	'protoplus.cjs': CJSprettified,
-	'package.json': packageJSON,
-	'package-lock.json': packageLockJSON,
+	// =============== Final Send-off =============== //
+	// Printed in the GitHub Actions workflow logs (GITHUB_ACTIONS=true);
+	// suppressed on local runs. Use --send-off / --no-send-off to override.
+	if (shouldSendOff()) {
+		printSendOff({
+			'protoplus.js': webPrettified,
+			'protoplus.mjs': ES6prettified,
+			'protoplus.cjs': CJSprettified,
+			'package.json': packageJSON,
+			'package-lock.json': packageLockJSON,
+		});
+	}
 };
-console.log(' ===== Final Code Output ===== ');
-for (const [filename, content] of Object.entries(finalFiles)) {
-	const arrowSize = 5;
-	// Maybe find a way to make the arrow head connect to its tail?
-	console.log(`<${'-'.repeat(arrowSize)} ${filename}`);
-	console.log(content);
-	console.log(`${'-'.repeat(arrowSize)}>`);
+
+try {
+	main();
+} catch (err) {
+	console.error(`[Construct] Failed: ${err?.message ?? err}`);
+	process.exit(1);
 }

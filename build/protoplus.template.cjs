@@ -8,7 +8,6 @@ const snapshots = {};
 
 const options = {
 	silent: true,
-	preexpand: false,
 };
 
 module.exports = protoplus;
