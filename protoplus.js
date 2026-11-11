@@ -222,7 +222,11 @@
 						);
 					if (end > array.length)
 						throw new RangeError(
-							"Start index must be lesser than or equal to the target array's length."
+							"End index must be lesser than or equal to the target array's length."
+						);
+					if (end < start)
+						throw new RangeError(
+							'End index must be greater than or equal to start.'
 						);
 					if (!Number.isInteger(step))
 						throw new RangeError('Step size must be an integer');
@@ -353,8 +357,9 @@
 					return this.split(' ');
 				},
 				getLineEnding() {
-					if (/\r\n/.test(this.valueOf())) return '\r\n';
-					else if (/[^\r]\n/.test(this.valueOf())) return '\n';
+					const value = this.valueOf();
+					if (value.includes('\r\n')) return '\r\n';
+					else if (value.includes('\n')) return '\n';
 					else return undefined; // unknown
 				},
 				lines() {
@@ -369,7 +374,6 @@
 						'<<': '«',
 						'>>': '»',
 						'!!': '‼',
-						'⁇': '⁇',
 						'!?': '⁉',
 						'?!': '⁉',
 						// "fi": "ﬁ", // not punctuation but maybe someday
@@ -492,7 +496,7 @@
 			skipProtos = false,
 			skipGlobals = false,
 			skipClasses = false,
-			silent = globalThis?.options?.silent ?? false,
+			silent = false,
 		} = {}) => {
 			const startTime = now();
 
@@ -570,6 +574,7 @@
 			skipProtos = false,
 			skipGlobals = false,
 			skipClasses = false,
+			silent = false,
 		} = {}) => {
 			const startTime = now();
 
@@ -580,12 +585,16 @@
 
 				// define functions
 				for (const [name, def] of Object.entries(defs)) {
-					if (forceErase || !snapshots[`static.${key}.${name}`])
+					// Don't clobber something the user installed over proto+'s
+					// definition after expanding (unless erasing is forced).
+					if (!forceErase && globalThis[key][name] !== def) continue;
+					const snapshot = snapshots[`static.${key}.${name}`];
+					if (!snapshot) {
 						// delete definition if erasing is forced or there is no snapshot
 						delete globalThis[key][name];
-					else {
+					} else {
 						Object.defineProperty(globalThis[key], name, {
-							value: snapshots[`static.${key}.${name}`],
+							value: snapshot,
 							writable: true,
 							configurable: true,
 							enumerable: false,
@@ -601,12 +610,20 @@
 
 				// Define functions
 				for (const name of Object.keys(defs)) {
+					// Don't clobber something the user installed over proto+'s
+					// definition after expanding (unless erasing is forced).
+					if (
+						!forceErase &&
+						globalThis[key].prototype[name] !== defs[name]
+					)
+						continue;
+					const snapshot = snapshots[`prototype.${key}.${name}`];
 					// Delete definition if erasing is forced or there is no snapshot
-					if (forceErase || !snapshots[`prototype.${key}.${name}`])
+					if (!snapshot) {
 						delete globalThis[key].prototype[name];
-					else {
+					} else {
 						Object.defineProperty(globalThis[key].prototype, name, {
-							value: snapshots[`prototype.${key}.${name}`],
+							value: snapshot,
 							writable: true,
 							configurable: true,
 							enumerable: false,
@@ -635,7 +652,7 @@
 					`[proto+] Contracted methods in ${endTime - startTime}ms`
 				);
 		},
-		version: '1.14.0-build1',
+		version: '1.14.1',
 	};
 
 	if (options.preexpand) protoplus.expand(options);

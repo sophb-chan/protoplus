@@ -34,7 +34,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Skip if this version is already on npm
+      - name: Check if this version is already on npm
         id: check-npm
         run: |
           VERSION=$(node -p "require('./package.json').version")
@@ -46,6 +46,19 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # npm refuses to publish prerelease versions without an explicit --tag.
+      # Stable versions go to `latest` (what the README's CDN links use);
+      # prereleases go to `next`.
+      - name: Determine dist-tag
+        id: dist-tag
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then
+            echo "tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify package contents
         if: steps.check-npm.outputs.skip == 'false'
         run: npm pack --dry-run
@@ -53,8 +66,7 @@ jobs:
       # OIDC trusted publishing: no NODE_AUTH_TOKEN needed as long as this
       # repository + workflow file are configured as a trusted publisher for
       # the `protoplus` package on npmjs.com. --provenance attaches an
-      # attestation; the default dist-tag (`latest`) is used so the README's
-      # `protoplus@latest` CDN links match what gets published.
+      # attestation.
       - name: Publish to npm
         if: steps.check-npm.outputs.skip == 'false'
-        run: npm publish --provenance
+        run: npm publish --provenance --tag ${{ steps.dist-tag.outputs.tag }}

@@ -12,22 +12,16 @@ Proto+ (a.k.a. protoplus) is a multi-enviroment module that expands JavaScript's
 
 ### Via HTML
 ```html
-<script
-  src="https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs"
-  type="module"
-></script>
+<script type="module">
+  import protoplus from "https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs";
+  // ... your code here, using `protoplus`
+</script>
 ```
 
 ### Via JS
 ```js
-(()=>{
-  // import proto+
-
-  const script = document.createElement('script');
-  script.src = "https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs";
-  script.type = "module";
-  document.head.appendChild(script);
-})();
+import protoplus from "https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.mjs";
+// ... your code here, using `protoplus`
 ```
 
 ## In Node.js, Bun, or front-end frameworks like React/Next.js:
@@ -40,7 +34,6 @@ npm install protoplus
 
 then add either one of these lines of code to the top of your script file:
 ```js
-import { protoplus } from 'protoplus';
 import protoplus from 'protoplus';
 ```
 
@@ -75,8 +68,7 @@ npm install protoplus
 
 then add either one of these lines of code to the top of your script file:
 ```js
-const { protoplus } = require('protoplus');
-const protoplus = require('protoplus').default;
+const protoplus = require('protoplus');
 ```
 
 
