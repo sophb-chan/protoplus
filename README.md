@@ -34,7 +34,7 @@ const protoplus = require('protoplus');
 ```html
 <script src="https://cdn.jsdelivr.net/npm/protoplus@latest/protoplus.js"></script>
 ```
-This sets `globalThis.protoplus`. You can pin a version by replacing `latest`
+This sets `globalThis.protoplus`. It's recommended to pin a version by replacing `latest`
 with e.g. `2.0.0`.
 
 ## Browser module builds
