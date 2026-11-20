@@ -55,9 +55,9 @@ import protoplus from 'protoplus';
 
 protoplus.expand();
 
-console.log(Object.typeOf(42));      // "number"
-console.log([1, 2, 3].last());       // 3
-console.log('  hi  '.trimStart(' ')); // "hi  "
+console.log(Object.typeOf(null));     // "null"
+console.log([1, 2, 3].last());        // 3
+console.log('j  hi  '.trimStart(' ', 'j')); // "hi  "
 
 protoplus.contract(); // removes them again
 ```
